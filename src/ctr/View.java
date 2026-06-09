@@ -7,7 +7,7 @@ import java.awt.image.BufferStrategy;
 
 public class View extends Canvas
 {
-    public static final int SCREEN_WIDTH = 800;
+    public static final int SCREEN_WIDTH = 900;
     public static final int SCREEN_HEIGHT = 600;
     private BufferStrategy bs;
     private Scene scene;

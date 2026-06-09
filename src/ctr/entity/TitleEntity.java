@@ -33,7 +33,6 @@ public class TitleEntity extends Entity
         loadImageFromResource("/res/title_background.png");
         Graphics2D g = (Graphics2D) image.getGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        FontRenderer.draw(g, "(c) 2019 Original game by OscarSalas / QuiqueWong", 30,520);
         this.fadeEffect = fadeEffect;
         this.curtain = curtain;
         button = new Button(scene, "Play", 60, 42, 315, 370);
