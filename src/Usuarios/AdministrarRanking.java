@@ -17,60 +17,104 @@ import java.util.stream.Collectors;
  * @author gaat1
  */
 public class AdministrarRanking extends Rankings implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     private Map<String, Integer> puntuacionesGlobales;
     private Date ultimaActualizacion;
-    
+
     public AdministrarRanking() {
         this.jugadores = new ArrayList<>();
         this.puntuacionesGlobales = new HashMap<>();
         this.ultimaActualizacion = new Date();
     }
-    
+
     @Override
     public void actualizarRanking(Jugador jugador) {
-        synchronized(this) {
-            // Calcular puntuación basada en múltiples factores
+
+        synchronized (this) {
+
             int puntuacion = calcularPuntuacionCompuesta(jugador);
-            puntuacionesGlobales.put(jugador.getNombreUsuario(), puntuacion);
-            
-            // Ordenar y actualizar posiciones
+
+            puntuacionesGlobales.put(
+                    jugador.getNombreUsuario(),
+                    puntuacion
+            );
+
             actualizarListaRanking();
         }
     }
-    
+
     private int calcularPuntuacionCompuesta(Jugador jugador) {
+
         Estadisticas stats = jugador.getEstadisticas();
+
         int puntuacion = 0;
-        
-        // Fórmula de puntuación personalizable
+
         puntuacion += stats.getNivelesCompletados() * 100;
-        puntuacion += (stats.getTiempoTotalJugado() / 60) * 10; // 10 pts por minuto
+        puntuacion += (stats.getTiempoTotalJugado() / 60) * 10;
         puntuacion += stats.getPartidasGanadas() * 50;
         puntuacion -= stats.getIntentosFallidos() * 5;
-        
-        // Bonus por velocidad (menor tiempo promedio)
-        if (stats.getTiempoPromedioPorNivel() < 30) {
+
+        if (stats.getTiempoPromedioPorNivel() < 30
+                && stats.getTiempoPromedioPorNivel() > 0) {
             puntuacion += 200;
         }
-        
+
         return Math.max(0, puntuacion);
     }
-    
-    @Override
-    public List<Jugador> obtenerTopJugadores(int cantidad) {
-        return jugadores.stream()
-            .sorted((j1, j2) -> Integer.compare(
-                puntuacionesGlobales.get(j2.getNombreUsuario()),
-                puntuacionesGlobales.get(j1.getNombreUsuario())
-            ))
-            .limit(cantidad)
-            .collect(Collectors.toList());
+
+    private void actualizarListaRanking() {
+        ultimaActualizacion = new Date();
     }
 
     @Override
-    public int obtenerPosicion(Object jugador) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Jugador> obtenerTopJugadores(int cantidad) {
+
+        return jugadores.stream()
+                .sorted((j1, j2) -> Integer.compare(
+                puntuacionesGlobales.getOrDefault(
+                        j2.getNombreUsuario(), 0),
+                puntuacionesGlobales.getOrDefault(
+                        j1.getNombreUsuario(), 0)))
+                .limit(cantidad)
+                .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public int obtenerPosicion(Jugador jugador) {
+
+        List<Jugador> ranking =
+                obtenerTopJugadores(jugadores.size());
+
+        for (int i = 0; i < ranking.size(); i++) {
+
+            if (ranking.get(i).equals(jugador)) {
+                return i + 1;
+            }
+
+        }
+
+        return -1;
+    }
+
+    public int obtenerPuntuacion(Jugador jugador) {
+
+        return puntuacionesGlobales.getOrDefault(
+                jugador.getNombreUsuario(),
+                0
+        );
+    }
+
+    public void agregarJugador(Jugador jugador) {
+
+        if (!jugadores.contains(jugador)) {
+            jugadores.add(jugador);
+            actualizarRanking(jugador);
+        }
+    }
+
+    public Date getUltimaActualizacion() {
+        return ultimaActualizacion;
+    }
 }

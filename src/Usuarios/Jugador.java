@@ -207,22 +207,16 @@ public class Jugador implements Serializable {
      * Calcula la puntuación global del jugador para ranking
      */
     private int calcularPuntuacionGlobal() {
-        int puntuacion = 0;
-        
-        if (estadisticas != null) {
-            puntuacion += estadisticas.getNivelesCompletados() * 100;
-            puntuacion += estadisticas.getPartidasGanadas() * 50;
-            puntuacion += Math.max(0, 1000 - estadisticas.getTiempoPromedioPorNivel());
-            
-            // Bonus por consistencia
-            if (estadisticas.getRachaActual() > 0) {
-                puntuacion += estadisticas.getRachaActual() * 10;
-            }
-        }
-        
-        return puntuacion;
+    int puntuacion = 0;
+
+    if (estadisticas != null) {
+        puntuacion += estadisticas.getNivelesCompletados() * 100;
+        puntuacion += estadisticas.getPartidasGanadas() * 50;
+        puntuacion += Math.max(0, 1000 - (int)estadisticas.getTiempoPromedioPorNivel());
     }
-    
+
+    return puntuacion;
+}
     /**
      * Actualiza la puntuación en una categoría específica del ranking
      */

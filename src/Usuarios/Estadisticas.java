@@ -39,10 +39,14 @@ public class Estadisticas implements Serializable {
             partidasJugadas++;
             
             if (partida.isCompletada()) {
-                partidasGanadas++;
-                nivelesCompletados++;
-                actualizarMejoresTiempos(partida);
-            }
+
+    partidasGanadas++;
+    nivelesCompletados++;
+
+    tiempoTotalJugado += partida.getTiempoSegundos();
+
+    actualizarMejoresTiempos(partida);
+}
             
             if (partida.getIntentos() > 0) {
                 intentosFallidos += (partida.getIntentos() - 1);
