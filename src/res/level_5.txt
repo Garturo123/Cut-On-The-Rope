@@ -13,14 +13,20 @@
 
 pe, pet, 380, 500, 25, 50
 
-ro, rope, 380, 50, 380, 120
+ro, rope, 380, 50, 380, 180
+ro, rope2, 380, 390, 380, 230
 
-ca, candy, 380, 120, 25
+ac, air_cushion, 270, 220, 0
+ac, air_cushion2, 490, 220, 2
+
+ca, candy, 380, 220, 25
 
 pi, pin, rope
+pi, pin2, rope2
 
-cr, rope, 1
+cr, rope, 0        
+cr, rope2, 1
 
-st, star, 380, 220, 15
-st, star2, 380, 280, 15
-st, star3, 380, 340, 15
+st, star, 330, 220, 15
+st, star2, 380, 400, 15
+st, star3, 430, 220, 15
