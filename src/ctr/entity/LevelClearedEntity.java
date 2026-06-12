@@ -3,7 +3,7 @@ import ctr.Entity;
 import ctr.FontRenderer;
 import ctr.Scene;
 import ctr.Scene.GameState;
-import static ctr.Scene.GameState.*;
+import static ctr.Scene.GameState.LEVEL_CLEARED;
 import ctr.ui.Button;
 import ctr.ui.ButtonListener;
 import ctr.model.Star;

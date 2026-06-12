@@ -1,27 +1,10 @@
 package ctr;
+
+import Audio.Manager;
+import Usuarios.Menu;
 import static ctr.Scene.GameState.*;
-import ctr.entity.AirCushionEntity;
-import ctr.entity.BackgroundEntity;
-import ctr.entity.BubbleEntity;
-import ctr.entity.CandyEntity;
-import ctr.entity.CurtainEntity;
-import ctr.entity.FadeEffectEntity;
-import ctr.entity.GameOverEntity;
-import ctr.entity.InitializerEntity;
-import ctr.entity.LevelClearedEntity;
-import ctr.entity.PetEntity;
-import ctr.entity.PinRopeEntity;
-import ctr.entity.RopeEntity;
-import ctr.entity.SpikesEntity;
-import ctr.entity.StarEntity;
-import ctr.entity.TitleEntity;
-import ctr.model.AirCushion;
-import ctr.model.Bubble;
-import ctr.model.Model;
-import ctr.model.PinRope;
-import ctr.model.Rope;
-import ctr.model.Spikes;
-import ctr.model.Star;
+import ctr.entity.*;
+import ctr.model.*;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -32,23 +15,63 @@ public class Scene
     private final Model model = new Model(800, 600, 10);
     protected List<Entity> entities = new ArrayList<Entity>();
     protected List<Entity> levelEntities = new ArrayList<Entity>();
-    public static enum GameState { INITIALIZING, OL_PRESENTS, TITLE, LEVEL_SELECT, READY, PLAYING, LEVEL_CLEARED, GAME_OVER }
+    
+    // Estados del juego
+    public static enum GameState { 
+        // Estados existentes
+        INITIALIZING, OL_PRESENTS, TITLE, LEVEL_SELECT, READY, PLAYING, 
+        LEVEL_CLEARED, GAME_OVER,
+        
+        // Estados del sistema de usuarios
+        MENU_PRINCIPAL, LOGIN, REGISTER, REACTIVATE_ACCOUNT, PERFIL, 
+        AVATAR_SELECTOR, AUDIO_CONFIG, AMIGOS_LIST, CHALLENGE_SELECT, STATS
+    }
+    
     private GameState gameState = GameState.INITIALIZING;
     private int currentLevel = 1;
+    
+    // Componentes existentes
     private FadeEffectEntity fadeEffect;
     private CurtainEntity curtain;
     
-    public Scene()  {   }
+    // NUEVOS: Sistema de usuarios
+    private Menu menus;
+    private Manager audioManager;
     
-    public Model getModel() {   return model;   }
-
-    public GameState getGameState() {   return gameState;   }
-
-    public void setState(GameState gameState) 
-    {
-        if(this.gameState != gameState) 
-        {
+    // NUEVAS: Entidades de usuario
+    private MenuPrincipalEntity menuPrincipal;
+    private LoginEntity loginEntity;
+    private RegisterEntity registerEntity;
+    private ReactivateAccountEntity reactivateAccountEntity;
+    private PerfilEntity perfilEntity;
+    private AvatarSelectorEntity avatarSelector;
+    private AudioConfigEntity audioConfigEntity;
+    private AmigosListEntity amigosListEntity;
+    private ChallengeSelectEntity challengeSelectEntity;
+    private StatsEntity statsEntity;
+    
+    public Scene() {
+        // Inicializar sistemas de usuarios
+        menus = new Menu();
+        audioManager = new Manager(menus);
+    }
+    
+    public Model getModel() { return model; }
+    public Menu getMenus() { return menus; }
+    public Manager getAudioManager() { return audioManager; }
+    public GameState getGameState() { return gameState; }
+    
+    // Método para cambiar estado (ya lo tienes)
+    public void setState(GameState gameState) {
+        if(this.gameState != gameState) {
             this.gameState = gameState;
+            
+            // Manejo especial al entrar a PLAYING
+            if (gameState == PLAYING) {
+                audioManager.iniciarMusicaPartida();
+            }
+            
+            // Notificar a todas las entidades
             for (Entity entity : levelEntities)
                 entity.gameStateChanged(gameState);
             for (Entity entity : entities)
@@ -56,14 +79,19 @@ public class Scene
         }
     }
     
-    public void start()
-    {
+    // Método para cambiar estado desde entidades (conveniencia)
+    public void cambiarAState(GameState nuevoEstado) {
+        setState(nuevoEstado);
+    }
+    
+    public void start() {
         createAllEntities();
+        createAllUserEntities();  // NUEVO
         startAllEntities();
     }
     
-    private void createAllEntities()
-    {
+    // Crear entidades existentes (tú ya tenías esto)
+    private void createAllEntities() {
         fadeEffect = new FadeEffectEntity(this);
         curtain = new CurtainEntity(this);
         entities.add(new InitializerEntity(this, fadeEffect));
@@ -74,49 +102,70 @@ public class Scene
         entities.add(fadeEffect);
     }
     
-    private void createAllLevelEntities()
-    {
+    // NUEVO: Crear entidades del sistema de usuarios
+    private void createAllUserEntities() {
+        menuPrincipal = new MenuPrincipalEntity(this);
+        loginEntity = new LoginEntity(this, menus);
+        registerEntity = new RegisterEntity(this, menus);
+        reactivateAccountEntity = new ReactivateAccountEntity(this, menus);
+        perfilEntity = new PerfilEntity(this, menus, audioManager);
+        avatarSelector = new AvatarSelectorEntity(this, menus);
+        audioConfigEntity = new AudioConfigEntity(this, audioManager, menus);
+        amigosListEntity = new AmigosListEntity(this, menus);
+        challengeSelectEntity = new ChallengeSelectEntity(this, menus);
+        statsEntity = new StatsEntity(this, menus);
+        
+        // Agregar a entities (no a levelEntities, son persistentes)
+        entities.add(menuPrincipal);
+        entities.add(loginEntity);
+        entities.add(registerEntity);
+        entities.add(reactivateAccountEntity);
+        entities.add(perfilEntity);
+        entities.add(avatarSelector);
+        entities.add(audioConfigEntity);
+        entities.add(amigosListEntity);
+        entities.add(challengeSelectEntity);
+        entities.add(statsEntity);
+    }
+    
+    // Crear entidades del nivel (tú ya tenías esto)
+    private void createAllLevelEntities() {
         levelEntities.add(new BackgroundEntity(this));
         levelEntities.add(new PetEntity(this, curtain));
         for (AirCushion airCushion : model.getAirCushions())
-            levelEntities.add(new AirCushionEntity(this, airCushion));  //Air Cushion
+            levelEntities.add(new AirCushionEntity(this, airCushion));
         for (Rope rope : model.getRopes())
-            levelEntities.add(new RopeEntity(this, rope));              //Ropes
+            levelEntities.add(new RopeEntity(this, rope));
         for (PinRope pinRope : model.getPinRopes())
-            levelEntities.add(new PinRopeEntity(this, pinRope));        //Pin Ropes
+            levelEntities.add(new PinRopeEntity(this, pinRope));
         for (Spikes spikes : model.getSpikesList())
-            levelEntities.add(new SpikesEntity(this, spikes));          //Spikes
-        levelEntities.add(new CandyEntity(this));                       //Candy
+            levelEntities.add(new SpikesEntity(this, spikes));
+        levelEntities.add(new CandyEntity(this));
         for (Star star : model.getStars())
-            levelEntities.add(new StarEntity(this, star));              //Stars
+            levelEntities.add(new StarEntity(this, star));
         for (Bubble bubble : model.getBubbles())
-            levelEntities.add(new BubbleEntity(this, bubble));          //Bubbles
+            levelEntities.add(new BubbleEntity(this, bubble));
     }
 
-    private void startAllEntities() 
-    {
+    private void startAllEntities() {
         for (Entity entity : entities)
             entity.start();
     }
     
-    private void startAllLevelEntities() 
-    {
+    private void startAllLevelEntities() {
         for(Entity entity : levelEntities)
             entity.start();
     }
 
-    public void update() 
-    {
+    public void update() {
         for(Entity entity : levelEntities)
             entity.update();
         for(Entity entity : entities)
             entity.update();
     }
     
-    public void updateFixed() 
-    {
-        if(Mouse.pressed) 
-        {
+    public void updateFixed() {
+        if(Mouse.pressed) {
             List<Point> trail = model.getSlashTrail().getTrail();
             if(trail.size() > 0) {
                 Point p = trail.get(trail.size() - 1);
@@ -134,24 +183,20 @@ public class Scene
         model.update();
     }
     
-    public void draw(Graphics2D g) 
-    {
-        for(Entity entity : levelEntities) 
-        {
+    public void draw(Graphics2D g) {
+        for(Entity entity : levelEntities) {
             if(entity.isVisible())
                 entity.draw(g);
         }
-        for(Entity entity : entities) 
-        {
+        for(Entity entity : entities) {
             if(entity.isVisible())
                 entity.draw(g);
         }
         model.getSlashTrail().drawDebug(g);
     }
     
-        //Inicia control de gameflow
-    public void startLevel(int level) 
-    {
+    // Inicia control de gameflow (tú ya tenías esto)
+    public void startLevel(int level) {
         currentLevel = level;
         model.startLevel("/res/level_" + level + ".txt");
         levelEntities.clear();
@@ -160,9 +205,14 @@ public class Scene
         setState(PLAYING);
     }
 
-    public void replayLevel()   { startLevel(currentLevel);   }
-
-    public void backToTitle()   { setState(TITLE);  }
-
-    public void nextLevel() {   startLevel(currentLevel + 1);   }
+    public void replayLevel() { startLevel(currentLevel); }
+    public void backToTitle() { setState(MENU_PRINCIPAL); }  // CAMBIADO: Ahora va al menú principal
+    public void nextLevel() { startLevel(currentLevel + 1); }
+    
+    // NUEVOS: Métodos de conveniencia para navegación
+    public void irAPerfil() { setState(PERFIL); }
+    public void irAAmigos() { setState(AMIGOS_LIST); }
+    public void irAChallenge() { setState(CHALLENGE_SELECT); }
+    public void irAEstadisticas() { setState(STATS); }
+    public void irASeleccionNivel() { setState(LEVEL_SELECT); }
 }
