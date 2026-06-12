@@ -16,6 +16,7 @@ public class Button extends Entity
     private BufferedImage imageOver;
     private boolean pressed;
     private boolean over;
+    private String text;
     private final Vec2 position = new Vec2();
     private final Rectangle rectangle = new Rectangle();
     private ButtonListener listener;
@@ -64,7 +65,9 @@ public class Button extends Entity
                 listener.onClick();
         }
     }
-
+    public void setText(String text) {
+        this.text = text;
+    }
     @Override
     public void draw(Graphics2D g) 
     {

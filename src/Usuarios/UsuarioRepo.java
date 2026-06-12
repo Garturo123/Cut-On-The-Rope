@@ -19,14 +19,24 @@ public class UsuarioRepo {
     }
     
     public Usuario cargar(String username) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(rutaArchivo(username)))) {
-            Usuario usuario = (Usuario) in.readObject();
-            inicializarEstadoCuenta(usuario);
-            return usuario;
-        } catch (Exception e) {
-            return null;
-        }
+
+    try (ObjectInputStream in =
+            new ObjectInputStream(
+                new FileInputStream(
+                    rutaArchivo(username)))) {
+
+        return (Usuario) in.readObject();
+
+    } catch (Exception e) {
+
+        System.err.println(
+            "Error cargando usuario "
+            + username + ": "
+            + e.getMessage());
+
+        return null;
     }
+}
     
     public void guardar(Usuario usuario) {
         try {
@@ -62,13 +72,8 @@ public class UsuarioRepo {
         return RUTA_BASE + username + "/usuario.dat";
     }
     
-    private void inicializarEstadoCuenta(Usuario usuario) {
-        if (!usuario.isEstadoCuentaInicializado()) {
-            usuario.setCuentaActiva(true);
-            usuario.setEstadoCuentaInicializado(true);
-            guardar(usuario);
-        }
-    }
+
+    
     
     private boolean eliminarRecursivamente(File archivo) {
         if (archivo == null || !archivo.exists()) return true;

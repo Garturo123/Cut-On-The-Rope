@@ -3,7 +3,7 @@ package Usuarios;
 import java.io.*;
 import java.util.ArrayList;
 
-public class GestorNiveles {
+public class NivelRepo {
     private static final String RUTA_BASE = "data/usuarios/";
     
     public ArrayList<Niveles> cargar(String username) {

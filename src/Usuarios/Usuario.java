@@ -8,13 +8,12 @@ public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
     
     // Datos básicos
-    private String username;
+    private final String username;
     private String passwordHash;
     private String nombreCompleto;
     private Date fechaRegistro;
     private Date ultimaSesion;
     private boolean cuentaActiva;
-    private boolean estadoCuentaInicializado;
     
     // Estadísticas
     private int nivelesCompletados;
@@ -43,7 +42,6 @@ public class Usuario implements Serializable {
         this.fechaRegistro = new Date();
         this.ultimaSesion = new Date();
         this.cuentaActiva = true;
-        this.estadoCuentaInicializado = false;
         
         this.nivelesCompletados = 0;
         this.retosGanados = 0;
@@ -66,10 +64,19 @@ public class Usuario implements Serializable {
     
     // Getters y Setters básicos
     public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
     
     public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public boolean validarPassword(String passwordPlano) {
+        return passwordHash.equals(
+            SecurityUtil.hash(passwordPlano)
+        );
+    }
+
+    public void cambiarPassword(String passwordPlano) {
+        this.passwordHash =
+            SecurityUtil.hash(passwordPlano);
+    }
+
     
     public String getNombreCompleto() { return nombreCompleto; }
     public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
@@ -79,9 +86,6 @@ public class Usuario implements Serializable {
     
     public boolean isCuentaActiva() { return cuentaActiva; }
     public void setCuentaActiva(boolean cuentaActiva) { this.cuentaActiva = cuentaActiva; }
-    
-    public boolean isEstadoCuentaInicializado() { return estadoCuentaInicializado; }
-    public void setEstadoCuentaInicializado(boolean estado) { this.estadoCuentaInicializado = estado; }
     
     // Estadísticas
     public int getNivelesCompletados() { return nivelesCompletados; }
@@ -190,4 +194,5 @@ public class Usuario implements Serializable {
         this.musicaActiva = musAct;
         this.posicionMusicaSegundos = pos;
     }
+    
 }

@@ -2,6 +2,8 @@ package ctr;
 
 import Audio.Manager;
 import Usuarios.Menu;
+import Usuarios.SessionManager;
+import Usuarios.UsuarioRepo;
 import static ctr.Scene.GameState.*;
 import ctr.entity.*;
 import ctr.model.*;
@@ -37,7 +39,8 @@ public class Scene
     // NUEVOS: Sistema de usuarios
     private Menu menus;
     private Manager audioManager;
-    
+    private SessionManager seccion;
+    private UsuarioRepo repo;
     // NUEVAS: Entidades de usuario
     private MenuPrincipalEntity menuPrincipal;
     private LoginEntity loginEntity;
@@ -52,8 +55,8 @@ public class Scene
     
     public Scene() {
         // Inicializar sistemas de usuarios
-        menus = new Menu();
-        audioManager = new Manager(menus);
+        menus = new Menu(seccion, repo);
+        audioManager = new Manager(menus, seccion);
     }
     
     public Model getModel() { return model; }
@@ -110,7 +113,7 @@ public class Scene
         reactivateAccountEntity = new ReactivateAccountEntity(this, menus);
         perfilEntity = new PerfilEntity(this, menus, audioManager);
         avatarSelector = new AvatarSelectorEntity(this, menus);
-        audioConfigEntity = new AudioConfigEntity(this, audioManager, menus);
+        audioConfigEntity = new AudioConfigEntity(this, audioManager, menus, seccion);
         amigosListEntity = new AmigosListEntity(this, menus);
         challengeSelectEntity = new ChallengeSelectEntity(this, menus);
         statsEntity = new StatsEntity(this, menus);
