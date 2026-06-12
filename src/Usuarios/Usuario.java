@@ -149,6 +149,14 @@ public class Usuario implements Serializable {
     public String getControles() { return controles; }
     public void setControles(String controles) { this.controles = controles; }
     
+    // Agrega este método en la clase Usuario, después del método cerrarSesion() o donde prefieras
+
+    public void reactivarCuenta() {
+        this.cuentaActiva = true;
+    }
+    public void desactivarCuenta() {
+        this.cuentaActiva = false;
+    }
     // Métodos de sesión
     public void iniciarSesion() {
         this.ultimaSesion = new Date();

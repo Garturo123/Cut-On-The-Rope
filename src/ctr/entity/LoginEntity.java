@@ -1,6 +1,8 @@
 package ctr.entity;
 
-import Usuarios.Menu;
+import Usuarios.AuthService;
+import Usuarios.SessionManager;
+import Usuarios.UsuarioRepo;
 import ctr.Entity;
 import ctr.Scene;
 import ctr.Scene.GameState;
@@ -19,11 +21,15 @@ public class LoginEntity extends Entity {
     private String mensajeError = "";
     private int contadorError = 0;
     
-    private transient Menu menus;
+    private AuthService authService;
+    private UsuarioRepo usuarioRepo;
+    private SessionManager sessionManager;
     
-    public LoginEntity(Scene scene, Menu menus) {
+    public LoginEntity(Scene scene, UsuarioRepo usuarioRepo, SessionManager sessionManager) {
         super(scene);
-        this.menus = menus;
+        this.usuarioRepo = usuarioRepo;
+        this.sessionManager = sessionManager;
+        this.authService = new AuthService(usuarioRepo, sessionManager);
         
         txtUsername = new TextField(scene, 200, 35, 300, 220, "Username");
         txtPassword = new TextField(scene, 200, 35, 300, 280, "Password", true);
@@ -41,9 +47,9 @@ public class LoginEntity extends Entity {
         String username = txtUsername.getText();
         String password = txtPassword.getText();
         
-        String resultado = menus.login(username, password);
+        String resultado = authService.login(username, password);
         
-        if (resultado.equals("Welcome")) {
+        if (resultado.equals("Bienvenido")) {
             scene.cambiarAState(GameState.LEVEL_SELECT);
         } else {
             mensajeError = resultado;
@@ -53,6 +59,8 @@ public class LoginEntity extends Entity {
     
     @Override
     public void update() {
+        if (!visible) return;
+        
         txtUsername.update();
         txtPassword.update();
         btnLogin.update();
@@ -66,6 +74,8 @@ public class LoginEntity extends Entity {
     
     @Override
     public void draw(Graphics2D g) {
+        if (!visible) return;
+        
         // Fondo
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
@@ -86,7 +96,8 @@ public class LoginEntity extends Entity {
         if (contadorError > 0) {
             g.setColor(Color.RED);
             g.setFont(g.getFont().deriveFont(14f));
-            g.drawString(mensajeError, 310, 340);
+            int x = 400 - (g.getFontMetrics().stringWidth(mensajeError) / 2);
+            g.drawString(mensajeError, x, 340);
         }
     }
     

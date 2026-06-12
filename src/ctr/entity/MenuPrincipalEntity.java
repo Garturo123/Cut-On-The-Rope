@@ -23,8 +23,8 @@ public class MenuPrincipalEntity extends Entity {
         super(scene);
         
         // Cargar imágenes
-        background = loadImageFromResource("/res/menu_bg.png");
-        logoTitulo = loadImageFromResource("/res/logo.png");
+        background = loadImageFromResource("/res/title.png");
+        logoTitulo = loadImageFromResource("/res/title.png");
         
         // Crear botones con tus texturas personalizadas
         btnLogin = new Button(scene, "Login", 120, 50, 300, 250);

@@ -39,7 +39,7 @@ public class Scene
     // NUEVOS: Sistema de usuarios
     private Menu menus;
     private Manager audioManager;
-    private SessionManager seccion;
+    private SessionManager seccion = new SessionManager();
     private UsuarioRepo repo;
     // NUEVAS: Entidades de usuario
     private MenuPrincipalEntity menuPrincipal;
@@ -108,11 +108,11 @@ public class Scene
     // NUEVO: Crear entidades del sistema de usuarios
     private void createAllUserEntities() {
         menuPrincipal = new MenuPrincipalEntity(this);
-        loginEntity = new LoginEntity(this, menus);
-        registerEntity = new RegisterEntity(this, menus);
-        reactivateAccountEntity = new ReactivateAccountEntity(this, menus);
-        perfilEntity = new PerfilEntity(this, menus, audioManager);
-        avatarSelector = new AvatarSelectorEntity(this, menus);
+        loginEntity = new LoginEntity(this,repo ,seccion);
+        registerEntity = new RegisterEntity(this, repo, seccion);
+        reactivateAccountEntity = new ReactivateAccountEntity(this, repo, seccion);
+        perfilEntity = new PerfilEntity(this, repo, seccion, audioManager);
+        avatarSelector = new AvatarSelectorEntity(this, seccion.getUsuarioActual());
         audioConfigEntity = new AudioConfigEntity(this, audioManager, menus, seccion);
         amigosListEntity = new AmigosListEntity(this, menus);
         challengeSelectEntity = new ChallengeSelectEntity(this, menus);

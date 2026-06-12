@@ -1,6 +1,8 @@
 package ctr.entity;
 
-import Usuarios.Menu;
+import Usuarios.AuthService;
+import Usuarios.SessionManager;
+import Usuarios.UsuarioRepo;
 import ctr.Entity;
 import ctr.Scene;
 import ctr.Scene.GameState;
@@ -22,11 +24,15 @@ public class RegisterEntity extends Entity {
     private boolean mensajeError = true;
     private int contadorMensaje = 0;
     
-    private transient Menu menus;
+    private AuthService authService;
+    private UsuarioRepo usuarioRepo;
+    private SessionManager sessionManager;
     
-    public RegisterEntity(Scene scene, Menu menus) {
+    public RegisterEntity(Scene scene, UsuarioRepo usuarioRepo, SessionManager sessionManager) {
         super(scene);
-        this.menus = menus;
+        this.usuarioRepo = usuarioRepo;
+        this.sessionManager = sessionManager;
+        this.authService = new AuthService(usuarioRepo, sessionManager);
         
         int ancho = 220;
         int x = 290;
@@ -50,7 +56,7 @@ public class RegisterEntity extends Entity {
         String nombre = txtNombreCompleto.getText();
         
         if (username.isEmpty() || password.isEmpty() || nombre.isEmpty()) {
-            mostrarMensaje("All fields are required", true);
+            mostrarMensaje("Complete all fields", true);
             return;
         }
         
@@ -59,11 +65,11 @@ public class RegisterEntity extends Entity {
             return;
         }
         
-        String resultado = menus.crearUsuario(username, password, nombre);
+        String resultado = authService.crearUsuario(username, password, nombre);
         
-        if (resultado.contains("correctamente")) {
+        if (resultado.equals("Usuario creado correctamente")) {
             mostrarMensaje(resultado, false);
-            menus.login(username, password);
+            authService.login(username, password);
             scene.cambiarAState(GameState.LEVEL_SELECT);
         } else {
             mostrarMensaje(resultado, true);
@@ -78,6 +84,8 @@ public class RegisterEntity extends Entity {
     
     @Override
     public void update() {
+        if (!visible) return;
+        
         txtUsername.update();
         txtNombreCompleto.update();
         txtPassword.update();
@@ -92,6 +100,8 @@ public class RegisterEntity extends Entity {
     
     @Override
     public void draw(Graphics2D g) {
+        if (!visible) return;
+        
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
         
@@ -109,7 +119,7 @@ public class RegisterEntity extends Entity {
         if (contadorMensaje > 0) {
             g.setColor(mensajeError ? Color.RED : Color.GREEN);
             g.setFont(g.getFont().deriveFont(13f));
-            int x = 400 - (mensaje.length() * 4) / 2;
+            int x = 400 - (g.getFontMetrics().stringWidth(mensaje) / 2);
             g.drawString(mensaje, x, 520);
         }
     }

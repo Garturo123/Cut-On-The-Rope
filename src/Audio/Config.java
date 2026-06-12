@@ -11,7 +11,8 @@ public class Config implements Serializable {
     private boolean sfxActivo = true;
     private boolean musicaActiva = true;
     private double posicionMusicaSegundos = 0;
-     
+    protected boolean isMute = (sfxActivo && musicaActiva);
+    
     public Config(){}
     public Config(int volSFX, int volMus, boolean sfxAct, boolean musAct, double pos) {
         this.volumenSFX = volSFX;

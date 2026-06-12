@@ -98,5 +98,7 @@ public class Manager {
         return config.getVolumenMusica();
     }
 
- 
+    public boolean isMute() {
+        return config.isMute;
+    }
 }

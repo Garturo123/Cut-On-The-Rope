@@ -9,7 +9,7 @@ import javafx.util.Duration;
 import java.io.File;
 
 public class Player {
-    private static final String ASSETS_DIR = "src/ashley/galatea/progra2/proyecto2/assets/";
+    private static final String ASSETS_DIR = "/res/";
     
     private MediaPlayer musicaPlayer;
     private Config config;
@@ -43,7 +43,7 @@ public class Player {
             }
             
             try {
-                Media media = new Media(new File(ASSETS_DIR + "long-day.mp3").toURI().toString());
+                Media media = new Media(new File(ASSETS_DIR + "fondo.mp3").toURI().toString());
                 musicaPlayer = new MediaPlayer(media);
                 musicaPlayer.setVolume(config.getVolumenMusica() / 100.0);
                 musicaPlayer.setCycleCount(MediaPlayer.INDEFINITE);

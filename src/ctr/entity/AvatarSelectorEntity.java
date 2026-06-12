@@ -1,6 +1,7 @@
 package ctr.entity;
 
-import Usuarios.Menu;
+import Usuarios.Avatar;
+import Usuarios.Usuario;
 import ctr.Entity;
 import ctr.Scene;
 import ctr.Scene.GameState;
@@ -25,19 +26,20 @@ public class AvatarSelectorEntity extends Entity {
     private String avatarActual;
     private String colorActual;
     
-    private transient Menu menus;
+    private Usuario usuarioActual;
+    private Avatar avatarManager;
     private BufferedImage previewAvatar;
     
-    public AvatarSelectorEntity(Scene scene, Menu menus) {
+    public AvatarSelectorEntity(Scene scene, Usuario usuario) {
         super(scene);
-        this.menus = menus;
+        this.usuarioActual = usuario;
+        this.avatarManager = new Avatar();
         
-        avataresDisponibles = menus.obtenerAvatares();
-        coloresDisponibles = menus.obtenerColoresAvatar();
-        avatarActual = menus.obtenerAvatarActual();
-        colorActual = menus.obtenerColorAvatarActual();
+        avataresDisponibles = avatarManager.obtenerAvataresDisponibles();
+        coloresDisponibles = avatarManager.obtenerColoresDisponibles();
+        avatarActual = avatarManager.obtenerAvatarActual(usuario);
+        colorActual = avatarManager.obtenerColorActual(usuario);
         
-        // Encontrar índices actuales
         avatarSeleccionado = avataresDisponibles.indexOf(avatarActual);
         if (avatarSeleccionado < 0) avatarSeleccionado = 0;
         colorSeleccionado = coloresDisponibles.indexOf(colorActual);
@@ -49,7 +51,7 @@ public class AvatarSelectorEntity extends Entity {
             final int index = i;
             int col = i % 4;
             int row = i / 4;
-            btnAvatares[i] = new Button(scene, "", 0, 0, 70 + col * 130, 120 + row * 100);
+            btnAvatares[i] = new Button(scene, "Selecionnar", 0, 0, 70 + col * 130, 120 + row * 100);
             btnAvatares[i].setListener(() -> {
                 avatarSeleccionado = index;
                 actualizarPreview();
@@ -60,7 +62,7 @@ public class AvatarSelectorEntity extends Entity {
         btnColores = new Button[coloresDisponibles.size()];
         for (int i = 0; i < coloresDisponibles.size(); i++) {
             final int index = i;
-            btnColores[i] = new Button(scene, "", 0, 0, 300 + i * 60, 420);
+            btnColores[i] = new Button(scene, "Color Avatar", 0, 0, 300 + i * 60, 420);
             btnColores[i].setListener(() -> {
                 colorSeleccionado = index;
                 actualizarPreview();
@@ -71,23 +73,27 @@ public class AvatarSelectorEntity extends Entity {
         btnVolver = new Button(scene, "Back", 50, 28, 400, 520);
         
         btnGuardar.setListener(() -> {
-            menus.guardarAvatar(avataresDisponibles.get(avatarSeleccionado), 
-                               coloresDisponibles.get(colorSeleccionado));
+            avatarManager.guardar(usuarioActual, 
+                                  avataresDisponibles.get(avatarSeleccionado), 
+                                  coloresDisponibles.get(colorSeleccionado));
             scene.cambiarAState(GameState.PERFIL);
         });
+        
         btnVolver.setListener(() -> scene.cambiarAState(GameState.PERFIL));
         
         actualizarPreview();
     }
     
     private void actualizarPreview() {
-        String avatarPath = "src/ashley/galatea/progra2/proyecto2/assets/" + 
+        String avatarPath = "/res/" + 
                            avataresDisponibles.get(avatarSeleccionado);
         previewAvatar = loadImageFromResource(avatarPath);
     }
     
     @Override
     public void update() {
+        if (!visible) return;
+        
         for (Button btn : btnAvatares) {
             if (btn != null) btn.update();
         }
@@ -100,6 +106,8 @@ public class AvatarSelectorEntity extends Entity {
     
     @Override
     public void draw(Graphics2D g) {
+        if (!visible) return;
+        
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
         
@@ -115,7 +123,7 @@ public class AvatarSelectorEntity extends Entity {
             int y = 120 + row * 100;
             
             BufferedImage avatar = loadImageFromResource(
-                "src/ashley/galatea/progra2/proyecto2/assets/" + avataresDisponibles.get(i));
+                "/res/" + avataresDisponibles.get(i));
             if (avatar != null) {
                 g.drawImage(avatar, x + 5, y + 5, 50, 50, null);
             }
@@ -160,8 +168,8 @@ public class AvatarSelectorEntity extends Entity {
     public void gameStateChanged(GameState newGameState) {
         visible = (newGameState == GameState.AVATAR_SELECTOR);
         if (visible) {
-            avatarActual = menus.obtenerAvatarActual();
-            colorActual = menus.obtenerColorAvatarActual();
+            avatarActual = avatarManager.obtenerAvatarActual(usuarioActual);
+            colorActual = avatarManager.obtenerColorActual(usuarioActual);
             avatarSeleccionado = avataresDisponibles.indexOf(avatarActual);
             colorSeleccionado = coloresDisponibles.indexOf(colorActual);
             if (avatarSeleccionado < 0) avatarSeleccionado = 0;

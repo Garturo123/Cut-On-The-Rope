@@ -1,7 +1,10 @@
 package ctr.entity;
 
 import Audio.Manager;
-import Usuarios.Menu;
+import Usuarios.AuthService;
+import Usuarios.SessionManager;
+import Usuarios.Usuario;
+import Usuarios.UsuarioRepo;
 import ctr.Entity;
 import ctr.Scene;
 import ctr.Scene.GameState;
@@ -9,6 +12,7 @@ import ctr.ui.Button;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 
 public class PerfilEntity extends Entity {
     
@@ -20,16 +24,20 @@ public class PerfilEntity extends Entity {
     private Button btnAmigos;
     private Button btnStats;
     
-    private transient Menu menus;
-    private transient Manager audioManager;
+    private AuthService authService;
+    private SessionManager sessionManager;
+    private UsuarioRepo usuarioRepo;
+    private Manager audioManager;
     
     private BufferedImage avatarActual;
     private String[] infoLines;
     private boolean necesitaActualizar = true;
     
-    public PerfilEntity(Scene scene, Menu menus, Manager audioManager) {
+    public PerfilEntity(Scene scene, UsuarioRepo usuarioRepo, SessionManager sessionManager, Manager audioManager) {
         super(scene);
-        this.menus = menus;
+        this.usuarioRepo = usuarioRepo;
+        this.sessionManager = sessionManager;
+        this.authService = new AuthService(usuarioRepo, sessionManager);
         this.audioManager = audioManager;
         
         int xCol1 = 100;
@@ -46,11 +54,11 @@ public class PerfilEntity extends Entity {
         
         btnVolver.setListener(() -> scene.cambiarAState(GameState.LEVEL_SELECT));
         btnCerrarSesion.setListener(() -> {
-            menus.logout();
+            authService.logout();
             scene.cambiarAState(GameState.MENU_PRINCIPAL);
         });
         btnEliminarCuenta.setListener(() -> {
-            menus.eliminarCuentaActual();
+            eliminarCuentaActual();
             scene.cambiarAState(GameState.MENU_PRINCIPAL);
         });
         btnCambiarAvatar.setListener(() -> scene.cambiarAState(GameState.AVATAR_SELECTOR));
@@ -59,36 +67,53 @@ public class PerfilEntity extends Entity {
         btnStats.setListener(() -> scene.cambiarAState(GameState.STATS));
     }
     
+    private void eliminarCuentaActual() {
+        Usuario usuario = sessionManager.getUsuarioActual();
+        if (usuario != null) {
+            usuarioRepo.eliminarCarpeta(usuario.getUsername());
+            sessionManager.cerrarSesion();
+        }
+    }
+    
     private void actualizarInfo() {
-        if (menus.getUsuarioActual() == null) return;
+        Usuario usuario = sessionManager.getUsuarioActual();
+        if (usuario == null) return;
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         
         infoLines = new String[] {
             "═══════════════════════════════════════",
             "USER PROFILE",
             "═══════════════════════════════════════",
-            "Username: " + menus.obtenerUsernamePerfil(),
-            "Name: " + menus.obtenerNombrePerfil(),
-            "Status: " + menus.obtenerStatusPerfil(),
+            "Username: " + usuario.getUsername(),
+            "Name: " + usuario.getNombreCompleto(),
+            "Status: " + (usuario.isCuentaActiva() ? "Active" : "Inactive"),
             "═══════════════════════════════════════",
             "STATISTICS",
             "═══════════════════════════════════════",
-            "Total Score: " + menus.obtenerScorePerfil(),
-            "Levels Completed: " + menus.obtenerNivelesCompletadosPerfil(),
-            "Challenges Won: " + menus.obtenerRetosGanadosPerfil(),
-            "Friends: " + menus.obtenerCantidadAmigosPerfil(),
+            "Total Score: " + usuario.getPuntuacionGeneral(),
+            "Levels Completed: " + usuario.getNivelesCompletados(),
+            "Challenges Won: " + usuario.getRetosGanados(),
+            "Friends: " + usuario.getAmigosRivales().size(),
             "═══════════════════════════════════════",
-            "Last Login: " + menus.obtenerUltimoLoginPerfil(),
-            "Registered: " + menus.obtenerFechaRegistroPerfil()
+            "Last Login: " + (usuario.getUltimaSesion() != null ? sdf.format(usuario.getUltimaSesion()) : "Never"),
+            "Registered: " + (usuario.getFechaRegistro() != null ? sdf.format(usuario.getFechaRegistro()) : "Unknown")
         };
         
-        String avatarPath = menus.obtenerAvatarPathPerfil();
+        String avatarPath = "src/ashley/galatea/progra2/proyecto2/assets/" + usuario.getAvatar();
         avatarActual = loadImageFromResource(avatarPath);
         necesitaActualizar = false;
     }
     
+    private String obtenerColorAvatarActual() {
+        Usuario usuario = sessionManager.getUsuarioActual();
+        return usuario != null ? usuario.getAvatarColorHex() : "#a2b794";
+    }
+    
     @Override
     public void update() {
-        if (menus.getUsuarioActual() == null) return;
+        if (sessionManager.getUsuarioActual() == null) return;
+        if (!visible) return;
         
         btnVolver.update();
         btnCerrarSesion.update();
@@ -101,7 +126,8 @@ public class PerfilEntity extends Entity {
     
     @Override
     public void draw(Graphics2D g) {
-        if (menus.getUsuarioActual() == null) return;
+        if (sessionManager.getUsuarioActual() == null) return;
+        if (!visible) return;
         
         if (necesitaActualizar) actualizarInfo();
         
@@ -112,7 +138,7 @@ public class PerfilEntity extends Entity {
         // Avatar
         if (avatarActual != null) {
             g.drawImage(avatarActual, 80, 120, 140, 140, null);
-            g.setColor(Color.decode(menus.obtenerColorAvatarActual()));
+            g.setColor(Color.decode(obtenerColorAvatarActual()));
             g.drawRoundRect(80, 120, 140, 140, 15, 15);
         }
         
@@ -121,7 +147,6 @@ public class PerfilEntity extends Entity {
         g.drawRoundRect(78, 118, 144, 144, 15, 15);
         
         // Información del perfil
-        g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(14f));
         
         int y = 140;

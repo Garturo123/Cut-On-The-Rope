@@ -136,4 +136,32 @@ public class AuthService {
     private String limpiar(String texto) {
         return texto == null ? "" : texto.trim().toLowerCase();
     }
+    public String reactivarCuenta(String username, String password) {
+        String usernameLimpio = limpiar(username);
+
+        if (!repo.existe(usernameLimpio))
+            return "User does not exist";
+
+        Usuario usuario = repo.cargar(usernameLimpio);
+
+        if (usuario == null)
+            return "Error loading user";
+
+        if (!usuario.validarPassword(password))
+            return "Incorrect password";
+
+        if (usuario.isCuentaActiva())
+            return "Account is already active";
+
+        usuario.reactivarCuenta();
+        repo.guardar(usuario);
+
+        logger.registrar(
+            usuario.getUsername(),
+            "account_activity.dat",
+            "Account reactivated"
+        );
+
+        return "Account reactivated successfully";
+    }
 }
