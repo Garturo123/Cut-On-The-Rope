@@ -42,7 +42,7 @@ public class PetEntity extends Entity implements PetListener, ModelListener
     }
     
     @Override
-    public void updateFixedPlaying() 
+    public void updatePlaying() 
     {
         updateAnimation();
         switch (instructionPointer) 

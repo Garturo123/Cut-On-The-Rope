@@ -24,7 +24,7 @@ public class CurtainEntity extends Entity
     }
 
     @Override
-    public void updateFixed() 
+    public void update() 
     {
         double dif = targetP - currentP;
         int s = dif > 0 ? 1 : -1;

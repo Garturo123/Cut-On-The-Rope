@@ -29,6 +29,7 @@ public class LevelClearedEntity extends Entity
     private boolean buttonReplayPressed;
     private boolean buttonTitlePressed;
     private boolean buttonNextPressed;
+    private boolean progressSaved;
     
     public LevelClearedEntity(Scene scene, FadeEffectEntity fadeEffect, CurtainEntity curtain) 
     {
@@ -72,16 +73,17 @@ public class LevelClearedEntity extends Entity
         };
         buttonNext.setListener(buttonNextListener);
     }
-
-    @Override
-    protected void updateLevelCleared() {   }
     
     @Override
-    protected void updateFixedLevelCleared() 
+    protected void updateLevelCleared() 
     {
         switch (instructionPointer) 
         {
             case 0:
+                if (!progressSaved) {
+                    scene.completeCurrentLevel(countObtainedStars());
+                    progressSaved = true;
+                }
                 setCurrentWaitTime();
                 instructionPointer = 1;
             case 1:
@@ -156,6 +158,7 @@ public class LevelClearedEntity extends Entity
             buttonReplayPressed = false;
             buttonTitlePressed = false;
             buttonNextPressed = false;
+            progressSaved = false;
             buttonReplay.reset();
             buttonTitle.reset();
             buttonNext.reset();

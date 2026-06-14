@@ -40,19 +40,19 @@ public class PerfilEntity extends Entity {
         this.authService = new AuthService(usuarioRepo, sessionManager);
         this.audioManager = audioManager;
         
-        int xCol1 = 100;
-        int xCol2 = 350;
-        int yStart = 500;
+        int xCol1 = 105;
+        int xCol2 = 355;
+        int yStart = 480;
         
-        btnVolver = new Button(scene, "Back", 50, 28, 50, 550);
-        btnCerrarSesion = new Button(scene, "Logout", 60, 28, xCol1, yStart);
-        btnEliminarCuenta = new Button(scene, "Delete", 55, 28, xCol1 + 130, yStart);
-        btnCambiarAvatar = new Button(scene, "Avatar", 60, 28, xCol2, yStart);
-        btnConfigAudio = new Button(scene, "Audio", 55, 28, xCol2 + 110, yStart);
-        btnAmigos = new Button(scene, "Friends", 60, 28, xCol2 + 220, yStart);
-        btnStats = new Button(scene, "Stats", 55, 28, xCol2 + 330, yStart);
+        btnVolver = new Button(scene, "Back", 50, 28, 50, 535);
+        btnCerrarSesion = new Button(scene, "Logout", 50, 28, xCol1, yStart);
+        btnEliminarCuenta = new Button(scene, "Delete", 55, 28, xCol1 + 185, yStart);
+        btnCambiarAvatar = new Button(scene, "Avatar", 55, 28, xCol2 + 185, yStart);
+        btnConfigAudio = new Button(scene, "Audio", 55, 28, xCol1, yStart + 50);
+        btnAmigos = new Button(scene, "Friends", 50, 28, xCol1 + 185, yStart + 50);
+        btnStats = new Button(scene, "Stats", 55, 28, xCol2 + 185, yStart + 50);
         
-        btnVolver.setListener(() -> scene.cambiarAState(GameState.LEVEL_SELECT));
+        btnVolver.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
         btnCerrarSesion.setListener(() -> {
             authService.logout();
             scene.cambiarAState(GameState.MENU_PRINCIPAL);
@@ -100,7 +100,7 @@ public class PerfilEntity extends Entity {
             "Registered: " + (usuario.getFechaRegistro() != null ? sdf.format(usuario.getFechaRegistro()) : "Unknown")
         };
         
-        String avatarPath = "src/ashley/galatea/progra2/proyecto2/assets/" + usuario.getAvatar();
+        String avatarPath = "/res/" + usuario.getAvatar();
         avatarActual = loadImageFromResource(avatarPath);
         necesitaActualizar = false;
     }
@@ -181,6 +181,5 @@ public class PerfilEntity extends Entity {
     @Override
     protected void updateLevelCleared() {}
     
-    @Override
-    protected void updateFixedLevelCleared() {}
+
 }

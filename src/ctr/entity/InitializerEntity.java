@@ -14,7 +14,7 @@ public class InitializerEntity extends Entity
     }
 
     @Override
-    protected void updateFixedInitializing() 
+    protected void updateInitializing() 
     {
         switch (instructionPointer) 
         {

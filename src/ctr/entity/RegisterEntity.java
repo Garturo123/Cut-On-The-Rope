@@ -42,8 +42,8 @@ public class RegisterEntity extends Entity {
         txtPassword = new TextField(scene, ancho, 35, x, 260, "Password", true);
         txtConfirmPassword = new TextField(scene, ancho, 35, x, 310, "Confirm Password", true);
         
-        btnRegister = new Button(scene, "Register", 60, 28, 340, 380);
-        btnBack = new Button(scene, "Back", 50, 28, 340, 430);
+        btnRegister = new Button(scene, "Register", 40, 42, 340, 380);
+        btnBack = new Button(scene, "Back", 50, 42, 340, 430);
         
         btnRegister.setListener(() -> intentarRegistro());
         btnBack.setListener(() -> scene.cambiarAState(GameState.MENU_PRINCIPAL));
@@ -70,7 +70,7 @@ public class RegisterEntity extends Entity {
         if (resultado.equals("Usuario creado correctamente")) {
             mostrarMensaje(resultado, false);
             authService.login(username, password);
-            scene.cambiarAState(GameState.LEVEL_SELECT);
+            scene.cambiarAState(GameState.MENU_SESION);
         } else {
             mostrarMensaje(resultado, true);
         }
@@ -139,7 +139,21 @@ public class RegisterEntity extends Entity {
     
     @Override
     protected void updateLevelCleared() {}
+
+    public TextField getTxtUsername() {
+        return txtUsername;
+    }
+
+    public TextField getTxtNombreCompleto() {
+        return txtNombreCompleto;
+    }
+
+    public TextField getTxtPassword() {
+        return txtPassword;
+    }
+
+    public TextField getTxtConfirmPassword() {
+        return txtConfirmPassword;
+    }
     
-    @Override
-    protected void updateFixedLevelCleared() {}
 }

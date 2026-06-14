@@ -48,7 +48,7 @@ public class AudioConfigEntity extends Entity {
         
         btnVolver.setListener(() -> {
             guardarCambios();
-            scene.cambiarAState(GameState.PERFIL);
+            scene.cambiarAState(GameState.MENU_SESION);
         });
         
         btnSFXUp.setListener(() -> {
@@ -116,6 +116,7 @@ public class AudioConfigEntity extends Entity {
     
     @Override
     public void update() {
+        if (!visible) return;
         btnVolver.update();
         btnSFXUp.update();
         btnSFXDown.update();
@@ -130,6 +131,7 @@ public class AudioConfigEntity extends Entity {
     
     @Override
     public void draw(Graphics2D g) {
+        if (!visible) return;
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
         
@@ -191,6 +193,4 @@ public class AudioConfigEntity extends Entity {
     @Override
     protected void updateLevelCleared() {}
     
-    @Override
-    protected void updateFixedLevelCleared() {}
 }

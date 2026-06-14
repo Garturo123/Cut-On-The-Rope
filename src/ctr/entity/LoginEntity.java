@@ -50,7 +50,7 @@ public class LoginEntity extends Entity {
         String resultado = authService.login(username, password);
         
         if (resultado.equals("Bienvenido")) {
-            scene.cambiarAState(GameState.LEVEL_SELECT);
+            scene.cambiarAState(GameState.MENU_SESION);
         } else {
             mensajeError = resultado;
             contadorError = 180;
@@ -124,7 +124,13 @@ public class LoginEntity extends Entity {
     
     @Override
     protected void updateLevelCleared() {}
+
+    public TextField getTxtUsername() {
+        return txtUsername;
+    }
+
+    public TextField getTxtPassword() {
+        return txtPassword;
+    }
     
-    @Override
-    protected void updateFixedLevelCleared() {}
 }

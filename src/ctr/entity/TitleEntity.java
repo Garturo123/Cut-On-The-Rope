@@ -46,11 +46,10 @@ public class TitleEntity extends Entity
         };
     }
 
-    @Override
-    protected void updateTitle()    {   button.update();    }
+
     
     @Override
-    protected void updateFixedTitle()
+    protected void updateTitle()
     {
         titleShadowAngle += 0.0025;
         switch (instructionPointer) 

@@ -178,6 +178,7 @@ public class TextField extends Entity {
     @Override
     protected void updateLevelCleared() {}
     
-    @Override
-    protected void updateFixedLevelCleared() {}
+    public boolean isFocused() { 
+        return focused; 
+    }
 }

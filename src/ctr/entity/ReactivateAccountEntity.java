@@ -55,7 +55,8 @@ public class ReactivateAccountEntity extends Entity {
         
         if (resultado.equals("Account reactivated successfully")) {
             mostrarMensaje(resultado, false);
-            scene.cambiarAState(GameState.LEVEL_SELECT);
+            authService.login(username, password);
+            scene.cambiarAState(GameState.MENU_SESION);
         } else {
             mostrarMensaje(resultado, true);
         }
@@ -120,9 +121,15 @@ public class ReactivateAccountEntity extends Entity {
         }
     }
     
+    public TextField getTxtUsername() {
+        return txtUsername;
+    }
+
+    public TextField getTxtPassword() {
+        return txtPassword;
+    }
+    
     @Override
     protected void updateLevelCleared() {}
     
-    @Override
-    protected void updateFixedLevelCleared() {}
 }

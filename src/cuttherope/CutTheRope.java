@@ -16,7 +16,7 @@ public class CutTheRope
                 JFrame frame = new JFrame();
                 frame.setTitle("Cut The Rope");
                 frame.getContentPane().add(view);
-                frame.setSize(800, 600);
+                frame.pack();
                 frame.setLocationRelativeTo(null);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setResizable(false);

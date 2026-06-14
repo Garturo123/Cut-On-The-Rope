@@ -56,11 +56,9 @@ public class GameOverEntity extends Entity
         buttonTitle.setListener(buttonTitleListener);
     }
 
+
     @Override
-    protected void updateGameOver() {   }
-    
-    @Override
-    protected void updateFixedGameOver() 
+    protected void updateGameOver() 
     {
         switch (instructionPointer) 
         {

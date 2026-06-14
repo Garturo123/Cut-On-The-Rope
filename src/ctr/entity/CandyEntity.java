@@ -32,7 +32,7 @@ public class CandyEntity extends Entity implements CandyListener
     }
 
     @Override
-    public void updateFixedPlaying() 
+    public void updatePlaying() 
     {
         if(destroyed)
             angle += 0.2;
