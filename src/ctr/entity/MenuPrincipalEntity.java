@@ -23,13 +23,13 @@ public class MenuPrincipalEntity extends Entity {
         super(scene);
         
         // Cargar imágenes
-        background = loadImageFromResource("/res/title.png");
+        background = loadImageFromResource("/res/title_background.png");
         logoTitulo = loadImageFromResource("/res/title.png");
         
         // Crear botones con tus texturas personalizadas
-        btnLogin = new Button(scene, "Login", 120, 50, 300, 250);
-        btnRegister = new Button(scene, "Register", 120, 50, 300, 320);
-        btnExit = new Button(scene, "Exit", 120, 50, 300, 390);
+        btnLogin = new Button(scene, "Login", 50, 42, 300, 250);
+        btnRegister = new Button(scene, "Register", 30, 42, 300, 320);
+        btnExit = new Button(scene, "Exit", 60, 42, 300, 390);
         
         // Listeners
         btnLogin.setListener(() -> loginPressed = true);
@@ -43,21 +43,27 @@ public class MenuPrincipalEntity extends Entity {
     }
     
     @Override
-    protected void updateLevelCleared() {
-        // Método de actualización normal
+    protected void updateMenuPrincipal()
+    {
         btnLogin.update();
         btnRegister.update();
         btnExit.update();
-        
-        if (loginPressed) {
+
+        if (loginPressed)
+        {
             scene.cambiarAState(GameState.LOGIN);
             loginPressed = false;
-        } else if (registerPressed) {
+        }
+        else if (registerPressed)
+        {
             scene.cambiarAState(GameState.REGISTER);
             registerPressed = false;
-        } else if (exitPressed) {
+        }
+        else if (exitPressed)
+        {
             System.exit(0);
         }
+
     }
     
     @Override
@@ -81,6 +87,10 @@ public class MenuPrincipalEntity extends Entity {
             loginPressed = false;
             registerPressed = false;
             exitPressed = false;
+            
+            btnLogin.reset();
+            btnRegister.reset();
+            btnExit.reset();
         }
     }
 }

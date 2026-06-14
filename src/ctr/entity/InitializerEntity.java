@@ -30,7 +30,7 @@ public class InitializerEntity extends Entity
             case 2:
                 if(!fadeEffect.fadeEffectFinished())
                     return;
-                scene.setState(TITLE);
+                scene.setState(MENU_PRINCIPAL);
         }
     }
 }

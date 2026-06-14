@@ -33,10 +33,10 @@ public class LoginEntity extends Entity {
         
         txtUsername = new TextField(scene, 200, 35, 300, 220, "Username");
         txtPassword = new TextField(scene, 200, 35, 300, 280, "Password", true);
-        
-        btnLogin = new Button(scene, "Login", 50, 28, 340, 350);
-        btnBack = new Button(scene, "Back", 50, 28, 340, 400);
-        btnReactivar = new Button(scene, "Reactivate", 65, 28, 340, 450);
+
+        btnLogin = new Button(scene, "Login", 50, 42, 340, 350);
+        btnBack = new Button(scene, "Back", 50, 42, 340, 400);
+        btnReactivar = new Button(scene, "Reactivate", 20, 42, 340, 450);
         
         btnLogin.setListener(() -> intentarLogin());
         btnBack.setListener(() -> scene.cambiarAState(GameState.MENU_PRINCIPAL));
@@ -58,18 +58,20 @@ public class LoginEntity extends Entity {
     }
     
     @Override
-    public void update() {
-        if (!visible) return;
-        
+    protected void updateLogin()
+    {
+        if (!visible)
+            return;
+
         txtUsername.update();
         txtPassword.update();
+
         btnLogin.update();
         btnBack.update();
         btnReactivar.update();
-        
-        if (contadorError > 0) {
+
+        if (contadorError > 0)
             contadorError--;
-        }
     }
     
     @Override
@@ -102,13 +104,21 @@ public class LoginEntity extends Entity {
     }
     
     @Override
-    public void gameStateChanged(GameState newGameState) {
+    public void gameStateChanged(GameState newGameState)
+    {
         visible = (newGameState == GameState.LOGIN);
-        if (visible) {
+
+        if (visible)
+        {
             txtUsername.clear();
             txtPassword.clear();
+
             mensajeError = "";
             contadorError = 0;
+
+            btnLogin.reset();
+            btnBack.reset();
+            btnReactivar.reset();
         }
     }
     

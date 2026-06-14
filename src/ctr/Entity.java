@@ -62,6 +62,13 @@ public class Entity
             case PLAYING: updateFixedPlaying(); break;
             case LEVEL_CLEARED: updateFixedLevelCleared(); break;
             case GAME_OVER: updateFixedGameOver(); break;
+            
+            case MENU_PRINCIPAL: updateMenuPrincipal(); break;
+            case LOGIN: updateLogin(); break;
+            case REGISTER: updateRegister(); break;
+            case PERFIL: updatePerfil(); break;
+            case REACTIVATE_ACCOUNT: updateReactivateAccount(); break;
+
         }
     }
     
@@ -98,6 +105,16 @@ public class Entity
     protected void updateFixedLevelCleared()    {   }
 
     protected void updateFixedGameOver()    {   }
+    
+    protected void updateMenuPrincipal() { }
+
+    protected void updateLogin() { }
+
+    protected void updateRegister() { }
+
+    protected void updatePerfil() { }
+
+    protected void updateReactivateAccount() {}
     
     public void gameStateChanged(GameState newGameState)    {   }
     

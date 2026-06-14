@@ -37,10 +37,10 @@ public class Scene
     private CurtainEntity curtain;
     
     // NUEVOS: Sistema de usuarios
-    private Menu menus;
-    private Manager audioManager;
-    private SessionManager seccion = new SessionManager();
-    private UsuarioRepo repo;
+    private final Menu menus;
+    private final Manager audioManager;
+    private final SessionManager seccion ;
+    private final UsuarioRepo repo;
     // NUEVAS: Entidades de usuario
     private MenuPrincipalEntity menuPrincipal;
     private LoginEntity loginEntity;
@@ -55,6 +55,8 @@ public class Scene
     
     public Scene() {
         // Inicializar sistemas de usuarios
+        seccion =  new SessionManager();
+        repo = new UsuarioRepo();
         menus = new Menu(seccion, repo);
         audioManager = new Manager(menus, seccion);
     }

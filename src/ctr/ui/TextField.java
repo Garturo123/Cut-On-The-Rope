@@ -153,10 +153,12 @@ public class TextField extends Entity {
             if (password && !text.isEmpty()) {
                 textoAMostrar = "•".repeat(text.length());
             } else {
-                textoAMostrar = text;
+                // SOLUCIÓN: Si está vacío, usar un espacio
+                textoAMostrar = text.isEmpty() ? " " : text;
             }
             g.setColor(Color.WHITE);
         }
+
         
         int textX = (int) position.x + 10;
         int textY = (int) position.y + height / 2 + 5;
