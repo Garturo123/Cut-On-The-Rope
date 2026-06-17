@@ -24,6 +24,7 @@ public class InitializerEntity extends Entity
             case 1:
                 if(!checkPassedTime(3))
                     return;
+                scene.prepararMusicaFondo();
                 fadeEffect.setTargetColor(Color.WHITE);
                 fadeEffect.fadeOut();
                 instructionPointer = 2;

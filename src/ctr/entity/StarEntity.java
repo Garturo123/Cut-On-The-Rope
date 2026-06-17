@@ -67,5 +67,15 @@ public class StarEntity extends Entity implements StarListener
     public void gameStateChanged(Scene.GameState newGameState)  {   visible = newGameState == Scene.GameState.PLAYING;  }    
 
     @Override
-    public void onStarCaught()  {   animation.selectAnimation("disappear"); }
+    public void onStarCaught()
+    {
+        int caught = 0;
+        for (Star levelStar : scene.getModel().getStars()) {
+            if (!levelStar.isVisible())
+                caught++;
+        }
+        int soundIndex = Math.max(1, Math.min(3, caught));
+        scene.reproducirSFX("SoundEfects/star_" + soundIndex + ".wav");
+        animation.selectAnimation("disappear");
+    }
 }

@@ -70,6 +70,7 @@ public class CandyEntity extends Entity implements CandyListener
     @Override
     public void onCandyDestroyed() 
     {
+        scene.reproducirSFX("SoundEfects/candy_break.wav");
         destroyed = true;
         World world = scene.getModel().getWorld();
         double x = candy.getPivot().x;

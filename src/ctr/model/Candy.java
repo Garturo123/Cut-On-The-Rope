@@ -105,6 +105,8 @@ public class Candy
 
     public void update() 
     {
+        if(!model.isPlaying())
+            return;
         Vec2 candyPivot = getPivot();
         if(!model.isLevelFailured() && ((candyPivot.y < (3 * -radius) || candyPivot.y > (model.getWorld().getHeight() + 3 * radius))))
             model.levelFailured();
@@ -125,6 +127,37 @@ public class Candy
     {
         for (Particle p : particles)
             p.addForce(force);
+    }
+
+    public void dampenVelocity(double scaleX, double scaleY)
+    {
+        for (Particle p : particles)
+        {
+            double velocityX = p.position.x - p.previousPosition.x;
+            double velocityY = p.position.y - p.previousPosition.y;
+            p.previousPosition.x = p.position.x - velocityX * scaleX;
+            p.previousPosition.y = p.position.y - velocityY * scaleY;
+        }
+    }
+
+    public double getAverageVelocityY()
+    {
+        double velocityY = 0;
+        for (Particle p : particles)
+            velocityY += p.position.y - p.previousPosition.y;
+        return velocityY / particles.length;
+    }
+
+    public void limitNextUpwardVelocity(double maxUpwardSpeed)
+    {
+        double maxVelocityY = -maxUpwardSpeed;
+        for (Particle p : particles)
+        {
+            double velocityY = p.position.y - p.previousPosition.y;
+            double projectedVelocityY = velocityY + p.force.y;
+            if (projectedVelocityY < maxVelocityY)
+                p.previousPosition.y = p.position.y - (maxVelocityY - p.force.y);
+        }
     }
     
     public void destroy() 

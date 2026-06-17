@@ -13,23 +13,52 @@ public class Amigos {
         this.logger = logger;
     }
     
-    public String agregarBidireccional(Usuario actual, String usernameAmigo) {
+    public String solicitarAmistad(Usuario actual, String usernameAmigo) {
         String usernameLimpio = limpiar(usernameAmigo);
         
         if (actual.getUsername().equals(usernameLimpio)) return "No puede agregarse a sí mismo";
         if (!usuarioRepo.existe(usernameLimpio)) return "El usuario no existe";
-        
-        actual.agregarAmigoRival(usernameLimpio);
-        usuarioRepo.guardar(actual);
+        if (actual.getAmigosRivales().contains(usernameLimpio)) return "Ya son amigos";
+        if (actual.getSolicitudesAmistadEnviadas().contains(usernameLimpio)) return "Solicitud ya enviada";
         
         Usuario amigo = usuarioRepo.cargar(usernameLimpio);
-        if (amigo != null) {
-            amigo.agregarAmigoRival(actual.getUsername());
-            usuarioRepo.guardar(amigo);
+        if (amigo == null) return "El usuario no existe";
+
+        if (actual.getSolicitudesAmistadRecibidas().contains(usernameLimpio)) {
+            return aceptarSolicitud(actual, usernameLimpio);
         }
+
+        actual.agregarSolicitudEnviada(usernameLimpio);
+        amigo.agregarSolicitudRecibida(actual.getUsername());
+        usuarioRepo.guardar(actual);
+        usuarioRepo.guardar(amigo);
         
-        logger.registrar(actual.getUsername(), "account_activity.dat", "Agregó a " + usernameLimpio + " como amigo");
-        return "Amigo agregado correctamente";
+        logger.registrar(actual.getUsername(), "account_activity.dat", "Envió solicitud a " + usernameLimpio);
+        logger.registrar(usernameLimpio, "account_activity.dat", "Recibió solicitud de " + actual.getUsername());
+        return "Solicitud enviada";
+    }
+
+    public String aceptarSolicitud(Usuario actual, String usernameSolicitante) {
+        String solicitanteLimpio = limpiar(usernameSolicitante);
+
+        if (!actual.getSolicitudesAmistadRecibidas().contains(solicitanteLimpio)) {
+            return "No hay solicitud de ese usuario";
+        }
+
+        Usuario solicitante = usuarioRepo.cargar(solicitanteLimpio);
+        if (solicitante == null) return "El usuario no existe";
+
+        actual.eliminarSolicitudRecibida(solicitanteLimpio);
+        actual.agregarAmigoRival(solicitanteLimpio);
+        solicitante.eliminarSolicitudEnviada(actual.getUsername());
+        solicitante.agregarAmigoRival(actual.getUsername());
+
+        usuarioRepo.guardar(actual);
+        usuarioRepo.guardar(solicitante);
+
+        logger.registrar(actual.getUsername(), "account_activity.dat", "Aceptó solicitud de " + solicitanteLimpio);
+        logger.registrar(solicitanteLimpio, "account_activity.dat", actual.getUsername() + " aceptó la solicitud");
+        return "Solicitud aceptada";
     }
     
     public String eliminar(Usuario actual, ArrayList<String> amigos) {
@@ -57,6 +86,7 @@ public class Amigos {
             .map(Usuario::getUsername)
             .filter(u -> !u.equals(actual.getUsername()))
             .filter(u -> !amigos.contains(u))
+            .filter(u -> !actual.getSolicitudesAmistadEnviadas().contains(u))
             .filter(u -> filtroLimpio.isEmpty() || u.contains(filtroLimpio))
             .collect(Collectors.toCollection(ArrayList::new));
     }

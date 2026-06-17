@@ -92,22 +92,42 @@ public class PetEntity extends Entity implements PetListener, ModelListener
     }
 
     @Override
-    public void onCandyEaten()  {   animation.selectAnimation("chew");  }
+    public void onCandyEaten()
+    {
+        scene.reproducirSFX("SoundEfects/monster_chewing.wav");
+        animation.selectAnimation("chew");
+    }
 
     @Override
-    public void onCandyClose()  {   animation.selectAnimation("openMouth"); }
+    public void onCandyClose()
+    {
+        scene.reproducirSFX("SoundEfects/monster_open.wav");
+        animation.selectAnimation("openMouth");
+    }
 
     @Override
-    public void onCandyEscaped()    {   animation.selectAnimation("closeMouth");    }
+    public void onCandyEscaped()
+    {
+        scene.reproducirSFX("SoundEfects/monster_close.wav");
+        animation.selectAnimation("closeMouth");
+    }
     @Override
     public void onFailure()
     {
+        if(levelCleared)
+            return;
+        scene.reproducirSFX("SoundEfects/monster_sad.wav");
         animation.selectAnimation("sad");
         gameOver = true;
     }
 
     @Override
-    public void onLevelCleared()    {   levelCleared = true;    }
+    public void onLevelCleared()
+    {
+        gameOver = false;
+        scene.reproducirSFX("SoundEfects/win.wav");
+        levelCleared = true;
+    }
 
     @Override
     public void gameStateChanged(Scene.GameState newGameState) 

@@ -91,18 +91,19 @@ public class LevelClearedEntity extends Entity
                     return;
                 buttonReplay.setVisible(true);
                 buttonTitle.setVisible(true);
-                buttonNext.setVisible(true);
+                buttonNext.setVisible(scene.hasNextLevel());
                 showStars = true;
                 instructionPointer = 2;
             case 2:
                 buttonReplay.update();
                 buttonTitle.update();
-                buttonNext.update();
+                if (buttonNext.isVisible())
+                    buttonNext.update();
                 if (buttonReplayPressed)
                     scene.replayLevel();
                 else if (buttonTitlePressed)
                     instructionPointer = 3;
-                else if (buttonNextPressed)
+                else if (buttonNextPressed && buttonNext.isVisible())
                     scene.nextLevel();
                 return;
             case 3:
@@ -135,9 +136,10 @@ public class LevelClearedEntity extends Entity
             return;
         g.drawImage(levelCleared, 320, 100, null);
         int starsCount = countObtainedStars();
-        g.drawImage(starsCount > 0 ? starOn : starOff, 210, 170, null);
-        g.drawImage(starsCount > 1 ? starOn : starOff, 335, 170, null);
-        g.drawImage(starsCount > 2 ? starOn : starOff, 460, 170, null);
+        int startX = 165;
+        for (int i = 0; i < Scene.MAX_STARS; i++) {
+            g.drawImage(starsCount > i ? starOn : starOff, startX + i * 105, 170, 90, 90, null);
+        }
         if (buttonReplay.isVisible())
             buttonReplay.draw(g);
         if (buttonTitle.isVisible())

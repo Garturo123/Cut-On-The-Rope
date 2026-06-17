@@ -75,6 +75,7 @@ public class MenuPrincipalEntity extends Entity {
             case 2:
                 btnLogin.update();
                 btnRegister.update();
+                btnSettings.update();
                 btnExit.update();
 
                 if (loginPressed)

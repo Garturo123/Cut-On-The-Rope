@@ -2,24 +2,26 @@ package ctr.entity;
 import ctr.Entity;
 import ctr.Scene;
 import ctr.model.Rope;
+import ctr.model.RopeListener;
 import ctr.physics.Stick;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
-public class RopeEntity extends Entity 
+public class RopeEntity extends Entity implements RopeListener
 {    
-    private static final Stroke ROPE_STROKE = new BasicStroke(2);
-    private static final Stroke OUTLINE_STROKE = new BasicStroke(5);   
+    private static final Stroke ROPE_STROKE = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final Stroke OUTLINE_STROKE = new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private Rope rope;   
-    private static Color[] OUTLINE_COLOR = { Color.BLACK } ;
-    private static Color[] ROPE_COLOR = { new Color(250, 180, 180), new Color(200, 110, 110) };
+    private static Color[] OUTLINE_COLOR = { new Color(35, 26, 18) } ;
+    private static Color[] ROPE_COLOR = { new Color(72, 56, 36), new Color(38, 29, 21) };
     
     public RopeEntity(Scene scene, Rope rope) 
     {
         super(scene);
         this.rope = rope;
+        rope.addListener(this);
         loadImageFromResource("/res/pin2.png");
     }
     
@@ -56,4 +58,11 @@ public class RopeEntity extends Entity
 
     @Override
     public void gameStateChanged(Scene.GameState newGameState)  {   visible = newGameState == Scene.GameState.PLAYING;  }    
+
+    @Override
+    public void onRopeCut()
+    {
+        int sound = 1 + (int) (Math.random() * 4);
+        scene.reproducirSFX("SoundEfects/rope_bleak_" + sound + ".wav");
+    }
 }

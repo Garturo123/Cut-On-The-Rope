@@ -22,7 +22,7 @@ public class StatsEntity extends Entity {
         this.menus = menus;
         this.sessionManager = sessionManager;
         btnVolver = new Button(scene, I18n.t("back"), 50, 42, 415, 610);
-        btnVolver.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
+        btnVolver.setListener(() -> scene.cambiarAState(GameState.SOCIAL_MENU));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class StatsEntity extends Entity {
             g.setColor(Color.YELLOW);
             g.drawString(I18n.t("no_session"), 335, y);
         } else {
-            g.drawString(I18n.t("total_score") + usuario.getPuntuacionGeneral(), 310, y);
+            g.drawString(I18n.t("stars") + ": " + menus.totalEstrellas(usuario.getUsername()), 310, y);
             g.drawString(I18n.t("levels_completed") + usuario.getNivelesCompletados(), 310, y + 45);
             g.drawString(I18n.t("challenges_won") + usuario.getRetosGanados(), 310, y + 90);
             g.drawString(I18n.t("unlocked_level") + usuario.getNivelDesbloqueado(), 310, y + 135);

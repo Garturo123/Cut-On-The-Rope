@@ -21,6 +21,8 @@ public class Usuario implements Serializable {
     private int puntuacionGeneral;
     private int nivelDesbloqueado;
     private ArrayList<String> amigosRivales;
+    private ArrayList<String> solicitudesAmistadRecibidas;
+    private ArrayList<String> solicitudesAmistadEnviadas;
     private ArrayList<String> historialRetos;
     private ArrayList<String> partidasRegistradas;
     
@@ -48,13 +50,15 @@ public class Usuario implements Serializable {
         this.puntuacionGeneral = 0;
         this.nivelDesbloqueado = 1;
         this.amigosRivales = new ArrayList<>();
+        this.solicitudesAmistadRecibidas = new ArrayList<>();
+        this.solicitudesAmistadEnviadas = new ArrayList<>();
         this.historialRetos = new ArrayList<>();
         this.partidasRegistradas = new ArrayList<>();
         
         this.avatar = "avatar_1.png";
         this.avatarColorHex = "#a2b794";
         this.volumenSFX = 80;
-        this.volumenMusica =60;
+        this.volumenMusica = 35;
         this.sfxActivo = true;
         this.musicaActiva = true;
         this.posicionMusicaSegundos = 0;
@@ -101,16 +105,51 @@ public class Usuario implements Serializable {
     public void setNivelDesbloqueado(int nivelDesbloqueado) { this.nivelDesbloqueado = nivelDesbloqueado; }
     
     // Amigos
-    public ArrayList<String> getAmigosRivales() { return amigosRivales; }
+    public ArrayList<String> getAmigosRivales() {
+        if (amigosRivales == null) amigosRivales = new ArrayList<>();
+        return amigosRivales;
+    }
+
+    public ArrayList<String> getSolicitudesAmistadRecibidas() {
+        if (solicitudesAmistadRecibidas == null) solicitudesAmistadRecibidas = new ArrayList<>();
+        return solicitudesAmistadRecibidas;
+    }
+
+    public ArrayList<String> getSolicitudesAmistadEnviadas() {
+        if (solicitudesAmistadEnviadas == null) solicitudesAmistadEnviadas = new ArrayList<>();
+        return solicitudesAmistadEnviadas;
+    }
     
     public void agregarAmigoRival(String amigo) {
-        if (!amigosRivales.contains(amigo)) {
-            amigosRivales.add(amigo);
+        if (!getAmigosRivales().contains(amigo)) {
+            getAmigosRivales().add(amigo);
         }
+        getSolicitudesAmistadRecibidas().remove(amigo);
+        getSolicitudesAmistadEnviadas().remove(amigo);
     }
     
     public void eliminarAmigoRival(String amigo) {
-        amigosRivales.remove(amigo);
+        getAmigosRivales().remove(amigo);
+    }
+
+    public void agregarSolicitudRecibida(String username) {
+        if (!getSolicitudesAmistadRecibidas().contains(username) && !getAmigosRivales().contains(username)) {
+            getSolicitudesAmistadRecibidas().add(username);
+        }
+    }
+
+    public void agregarSolicitudEnviada(String username) {
+        if (!getSolicitudesAmistadEnviadas().contains(username) && !getAmigosRivales().contains(username)) {
+            getSolicitudesAmistadEnviadas().add(username);
+        }
+    }
+
+    public void eliminarSolicitudRecibida(String username) {
+        getSolicitudesAmistadRecibidas().remove(username);
+    }
+
+    public void eliminarSolicitudEnviada(String username) {
+        getSolicitudesAmistadEnviadas().remove(username);
     }
     
     // Retos

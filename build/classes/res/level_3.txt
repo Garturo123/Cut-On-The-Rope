@@ -1,0 +1,31 @@
+# # = comment
+#
+# ac = air cushion          -> ac, name, x, y, direction (0=right, 1=down, 2=left, 3=up);
+# bu = bubble               -> bu, name, x, y, radius
+# ca = candy                -> ca, name, x, y, radius
+# cr = attach candy to rope -> cr, rope_name, candy_position_index
+# pe = pet                  -> pe, name, x, y, radius, closeDistance
+# pi = pin                  -> pi, name, rope_name
+# pr = pin rope             -> pr, name, x, y, radius, ropeLength
+# ro = rope                 -> ro, name, x1, y1, x2, y2
+# sp = spikes               -> sp, name, x, y, w, h (h=40 / w=95, 170, 255, 325)
+# st = star                 -> st, name, x, y, radius
+
+pe, pet, 520, 510, 25, 55
+
+ro, rope, 420, 55, 420, 175
+ro, rope2, 610, 90, 520, 225
+
+ac, air_cushion, 400, 300, 0
+
+ca, candy, 460, 220, 25
+
+pi, pin, rope
+pi, pin2, rope2
+
+cr, rope, 0
+cr, rope2, 1
+
+st, star, 465, 285, 15
+st, star2, 520, 370, 15
+st, star3, 520, 470, 15

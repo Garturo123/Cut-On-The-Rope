@@ -268,7 +268,7 @@ public class Model
     
     void levelFailured() 
     {
-        if(levelFailured) 
+        if(levelFailured || levelCleared) 
             return;
         levelFailured = true;
         fireOnFailured();
@@ -276,6 +276,8 @@ public class Model
     
     void levelCleared() 
     {
+        if(levelCleared || levelFailured)
+            return;
         levelCleared = true;
         candy.setVisible(false);
         fireOnLevelCleared();

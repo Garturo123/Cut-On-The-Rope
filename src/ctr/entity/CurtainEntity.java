@@ -1,6 +1,7 @@
 package ctr.entity;
 import ctr.Entity;
 import ctr.Scene;
+import ctr.Time;
 import ctr.View;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -27,11 +28,12 @@ public class CurtainEntity extends Entity
     public void update() 
     {
         double dif = targetP - currentP;
-        int s = dif > 0 ? 1 : -1;
-        if (dif > 0.01 || dif < -0.01)
-            currentP = currentP + s * 0.04;
-        else
+        if (Math.abs(dif) > 0.001) {
+            double step = Math.min(1.0, Time.getDelta() * 7.5);
+            currentP = currentP + dif * step;
+        } else {
             currentP = targetP;
+        }
         topY = -View.SCREEN_HEIGHT / 2 * currentP;
         bottomY = View.SCREEN_HEIGHT / 2 + View.SCREEN_HEIGHT / 2 * currentP;
         visible = currentP < 1;

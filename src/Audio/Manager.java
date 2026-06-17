@@ -28,17 +28,26 @@ public class Manager {
             Usuario u = session.getUsuarioActual();
             config.setVolumenSFX(u.getVolumenSFX());
             config.setVolumenMusica(u.getVolumenMusica());
+            config.setSfxActivo(u.isSfxActivo());
+            config.setMusicaActiva(u.isMusicaActiva());
             config.setPosicionMusica(u.getPosicionMusicaSegundos());
         }
     }
     
     public void reproducirSFX(String archivo) { player.reproducirSFX(archivo); }
+    public void prepararMusicaFondo() { player.prepararMusica(); }
+    public void prepararMusicaFondo(String archivo) { player.prepararMusica(archivo); }
+    public void iniciarMusicaFondo() { player.iniciarMusica(); }
+    public void iniciarMusicaFondo(String archivo) { player.iniciarMusica(archivo); }
     public void iniciarMusicaPartida() { player.iniciarMusica(); }
     public void detenerMusica() { player.detenerMusica(); guardarConfig(); }
     
     public void alternarMuteGeneral() {
         config.toggleMute();
         player.actualizarVolumenMusica();
+        if (config.isMusicaActiva()) {
+            player.iniciarMusica();
+        }
         guardarConfig();
     }
     
@@ -59,7 +68,7 @@ public class Manager {
     
     private void guardarConfig() {
         player.guardarPosicion();
-        if (session.getUsuarioActual() != null) {
+        if (session != null && session.getUsuarioActual() != null) {
            session.getUsuarioActual().actualizarConfigAudio(
                 config.getVolumenSFX(),
                 config.getVolumenMusica(),
@@ -73,7 +82,6 @@ public class Manager {
 
     public void setVolumenSFX(int volumen) {
         config.setVolumenSFX(volumen);
-        player.actualizarVolumenMusica(); // Si Player tiene este método
         guardarConfig();
     }
 
