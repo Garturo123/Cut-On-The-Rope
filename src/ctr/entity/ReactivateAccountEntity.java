@@ -4,8 +4,10 @@ import Usuarios.AuthService;
 import Usuarios.SessionManager;
 import Usuarios.UsuarioRepo;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import ctr.ui.TextField;
 import java.awt.Color;
@@ -35,8 +37,8 @@ public class ReactivateAccountEntity extends Entity {
         txtUsername = new TextField(scene, 200, 35, 300, 220, "Username");
         txtPassword = new TextField(scene, 200, 35, 300, 280, "Password", true);
         
-        btnReactivar = new Button(scene, "Reactivate", 70, 28, 340, 350);
-        btnBack = new Button(scene, "Back", 50, 28, 340, 400);
+        btnReactivar = new Button(scene, I18n.t("reactivate"), 70, 28, 340, 350);
+        btnBack = new Button(scene, I18n.t("back"), 50, 28, 340, 400);
         
         btnReactivar.setListener(() -> intentarReactivar());
         btnBack.setListener(() -> scene.cambiarAState(GameState.LOGIN));
@@ -47,7 +49,7 @@ public class ReactivateAccountEntity extends Entity {
         String password = txtPassword.getText();
         
         if (username.isEmpty() || password.isEmpty()) {
-            mostrarMensaje("Complete all fields", true);
+            mostrarMensaje(I18n.t("complete_fields"), true);
             return;
         }
         
@@ -87,11 +89,11 @@ public class ReactivateAccountEntity extends Entity {
         if (!visible) return;
         
         g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(28f));
-        g.drawString("REACTIVATE ACCOUNT", 270, 150);
+        g.drawString(I18n.t("reactivate_title"), 270, 150);
         
         g.setFont(g.getFont().deriveFont(14f));
         g.setColor(Color.YELLOW);
@@ -118,7 +120,13 @@ public class ReactivateAccountEntity extends Entity {
             txtPassword.clear();
             mensaje = "";
             contadorMensaje = 0;
+            refreshText();
         }
+    }
+
+    private void refreshText() {
+        btnReactivar.setText(I18n.t("reactivate"));
+        btnBack.setText(I18n.t("back"));
     }
     
     public TextField getTxtUsername() {

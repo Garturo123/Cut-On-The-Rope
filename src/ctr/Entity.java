@@ -1,12 +1,10 @@
 package ctr;
 import ctr.Scene.GameState;
-import ctr.ui.TextField;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 public class Entity 
 {
@@ -15,8 +13,7 @@ public class Entity
     protected BufferedImage image;
     protected int instructionPointer;
     protected long waitTime;
-    private TextField textFieldFocused = null;
-
+    
     public Entity(Scene scene)  {    this.scene = scene;    }
 
     public boolean isVisible()  {    return visible; }
@@ -27,7 +24,7 @@ public class Entity
     {
         try 
         {
-            image = ImageIO.read(getClass().getResourceAsStream(resource));
+            image = ResourceLoader.loadImage(resource);
         } catch (IOException ex) 
         {
             Logger.getLogger(Entity.class.getName()).log(Level.SEVERE, null, ex);
@@ -38,33 +35,45 @@ public class Entity
     
     public void start() {   }
     
-    
-    
     public void update() 
     {
         switch (scene.getGameState()) 
         {
             case INITIALIZING: updateInitializing(); break;
-            case OL_PRESENTS: updateOLPresents(); break;
             case TITLE: updateTitle(); break;
             case LEVEL_SELECT: updateLevelSelect(); break;
             case READY: updateReady(); break;
             case PLAYING: updatePlaying(); break;
             case LEVEL_CLEARED: updateLevelCleared(); break;
             case GAME_OVER: updateGameOver(); break;
-            
             case MENU_PRINCIPAL: updateMenuPrincipal(); break;
             case LOGIN: updateLogin(); break;
             case REGISTER: updateRegister(); break;
-            case PERFIL: updatePerfil(); break;
             case REACTIVATE_ACCOUNT: updateReactivateAccount(); break;
             case MENU_SESION: updateMenuSesion(); break;
+            case PERFIL: updatePerfil(); break;
             case AVATAR_SELECTOR: updateAvatarSelector(); break;
             case AUDIO_CONFIG: updateAudioConfig(); break;
+            case SETTINGS: updateSettings(); break;
+            case LANGUAGE: updateLanguage(); break;
             case AMIGOS_LIST: updateAmigosList(); break;
             case CHALLENGE_SELECT: updateChallengeSelect(); break;
             case STATS: updateStats(); break;
-
+        }
+    }
+    
+    public void updateFixed() 
+    {
+        switch (scene.getGameState()) 
+        {
+            case INITIALIZING: updateFixedInitializing(); break;
+            case OL_PRESENTS: updateFixedOLPresents(); break;
+            case TITLE: updateFixedTitle(); break;
+            case LEVEL_SELECT: updateFixedLevelSelect(); break;
+            case READY: updateFixedReady(); break;
+            case PLAYING: updateFixedPlaying(); break;
+            case LEVEL_CLEARED: updateFixedLevelCleared(); break;
+            case GAME_OVER: updateFixedGameOver(); break;
         }
     }
     
@@ -85,32 +94,52 @@ public class Entity
     protected void updateLevelCleared() {   }
 
     protected void updateGameOver() {   }
-    
-    protected void updateMenuPrincipal() { }
 
-    protected void updateLogin() { }
+    protected void updateMenuPrincipal() {   }
 
-    protected void updateRegister() { }
+    protected void updateLogin() {   }
 
-    protected void updatePerfil() { }
+    protected void updateRegister() {   }
 
-    protected void updateReactivateAccount() {}
+    protected void updateReactivateAccount() {   }
 
-    protected void updateMenuSesion() {}
+    protected void updateMenuSesion() {   }
 
-    protected void updateAvatarSelector() {}
+    protected void updatePerfil() {   }
 
-    protected void updateAudioConfig() {}
+    protected void updateAvatarSelector() {   }
 
-    protected void updateAmigosList() {}
+    protected void updateAudioConfig() {   }
 
-    protected void updateChallengeSelect() {}
+    protected void updateSettings() {   }
 
-    protected void updateStats() {}
+    protected void updateLanguage() {   }
+
+    protected void updateAmigosList() {   }
+
+    protected void updateChallengeSelect() {   }
+
+    protected void updateStats() {   }
+
+    protected void updateFixedInitializing()    {   }
+
+    protected void updateFixedOLPresents()  {    }
+
+    protected void updateFixedTitle()   {   }
+
+    protected void updateFixedLevelSelect() {   }
+
+    protected void updateFixedReady()   {   }
+
+    protected void updateFixedPlaying() {   }
+
+    protected void updateFixedLevelCleared()    {   }
+
+    protected void updateFixedGameOver()    {   }
     
     public void gameStateChanged(GameState newGameState)    {   }
     
     protected void setCurrentWaitTime() {   waitTime = System.currentTimeMillis();  }
     
     protected boolean checkPassedTime(double time)  {   return (System.currentTimeMillis() - waitTime) * 0.001 >= time; }
-}
+    }

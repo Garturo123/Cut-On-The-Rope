@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 public class Animation 
 {
@@ -35,7 +34,7 @@ public class Animation
         {
             try 
             {
-                BufferedImage sprite = ImageIO.read(getClass().getResourceAsStream("/res/" + fileBaseName + i + ".png"));
+                BufferedImage sprite = ResourceLoader.loadImage("/res/" + fileBaseName + i + ".png");
                 f.add(sprite);
             } catch (IOException ex) 
             {

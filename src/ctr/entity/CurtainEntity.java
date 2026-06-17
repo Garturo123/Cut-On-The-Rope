@@ -40,8 +40,8 @@ public class CurtainEntity extends Entity
     @Override
     public void draw(Graphics2D g) 
     {
-        g.drawImage(top, 0, (int) topY, null);
-        g.drawImage(bottom, 0, (int) bottomY, null);
+        g.drawImage(top, 0, (int) topY, View.SCREEN_WIDTH, View.SCREEN_HEIGHT / 2, null);
+        g.drawImage(bottom, 0, (int) bottomY, View.SCREEN_WIDTH, View.SCREEN_HEIGHT / 2, null);
     }
     
     public void open()  {   targetP = 1;    }

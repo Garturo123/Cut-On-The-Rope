@@ -4,8 +4,10 @@ import Usuarios.AuthService;
 import Usuarios.SessionManager;
 import Usuarios.UsuarioRepo;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import ctr.ui.TextField;
 import java.awt.Color;
@@ -34,9 +36,9 @@ public class LoginEntity extends Entity {
         txtUsername = new TextField(scene, 200, 35, 300, 220, "Username");
         txtPassword = new TextField(scene, 200, 35, 300, 280, "Password", true);
 
-        btnLogin = new Button(scene, "Login", 50, 42, 340, 350);
-        btnBack = new Button(scene, "Back", 50, 42, 340, 400);
-        btnReactivar = new Button(scene, "Reactivate", 20, 42, 340, 450);
+        btnLogin = new Button(scene, I18n.t("login"), 50, 42, 340, 350);
+        btnBack = new Button(scene, I18n.t("back"), 50, 42, 340, 400);
+        btnReactivar = new Button(scene, I18n.t("reactivate"), 20, 42, 340, 450);
         
         btnLogin.setListener(() -> intentarLogin());
         btnBack.setListener(() -> scene.cambiarAState(GameState.MENU_PRINCIPAL));
@@ -50,6 +52,9 @@ public class LoginEntity extends Entity {
         String resultado = authService.login(username, password);
         
         if (resultado.equals("Bienvenido")) {
+            if (sessionManager.getUsuarioActual() != null) {
+                I18n.setLanguage(sessionManager.getUsuarioActual().getIdioma());
+            }
             scene.cambiarAState(GameState.MENU_SESION);
         } else {
             mensajeError = resultado;
@@ -80,12 +85,12 @@ public class LoginEntity extends Entity {
         
         // Fondo
         g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         
         // Título
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(36f));
-        g.drawString("LOGIN", 370, 150);
+        g.drawString(I18n.t("login").toUpperCase(), 370, 150);
         
         // Campos
         txtUsername.draw(g);
@@ -119,7 +124,14 @@ public class LoginEntity extends Entity {
             btnLogin.reset();
             btnBack.reset();
             btnReactivar.reset();
+            refreshText();
         }
+    }
+
+    private void refreshText() {
+        btnLogin.setText(I18n.t("login"));
+        btnBack.setText(I18n.t("back"));
+        btnReactivar.setText(I18n.t("reactivate"));
     }
     
     @Override

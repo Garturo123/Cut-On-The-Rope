@@ -1,6 +1,7 @@
 package ctr.entity;
 import ctr.Entity;
 import ctr.FontRenderer;
+import ctr.I18n;
 import ctr.Mouse;
 import ctr.Scene;
 import ctr.Scene.GameState;
@@ -35,7 +36,7 @@ public class TitleEntity extends Entity
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.fadeEffect = fadeEffect;
         this.curtain = curtain;
-        button = new Button(scene, "Play", 60, 42, 315, 370);
+        button = new Button(scene, I18n.t("play"), 60, 42, 415, 430);
         buttonListener = new ButtonListener() 
         {
             @Override
@@ -87,13 +88,13 @@ public class TitleEntity extends Entity
     @Override
     public void draw(Graphics2D g) 
     {
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(image, 0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT, null);
         titleShadowTransform.setToIdentity();
         titleShadowTransform.translate(View.SCREEN_WIDTH / 2, View.SCREEN_HEIGHT / 2);
         titleShadowTransform.rotate(titleShadowAngle);
         titleShadowTransform.translate(-titleShadow.getWidth() / 2, -titleShadow.getHeight() / 2);
         g.drawImage(titleShadow, titleShadowTransform, null);
-        g.drawImage(title, 180, 150, null);
+        g.drawImage(title, (View.SCREEN_WIDTH - title.getWidth()) / 2, 145, null);
         if(button.isVisible())
             button.draw(g);
     }
@@ -106,6 +107,7 @@ public class TitleEntity extends Entity
         {
             visible = true;
             instructionPointer = 0;
+            button.setText(I18n.t("play"));
             button.setListener(null);
             button.reset();
             gameStarted = false;
