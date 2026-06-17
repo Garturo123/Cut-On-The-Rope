@@ -71,6 +71,14 @@ public class FadeEffectEntity extends Entity
     public void fadeIn()    {   targetAlpha = 0;    }
 
     public void fadeOut()   {   targetAlpha = 1;    }
+
+    public void clear()
+    {
+        alpha = 0;
+        targetAlpha = 0;
+        visible = false;
+        color = new Color(0, 0, 0, 0);
+    }
     
     public boolean fadeEffectFinished() {   return alpha == targetAlpha;    }
 }

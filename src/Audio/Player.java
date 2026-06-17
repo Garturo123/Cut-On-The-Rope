@@ -1,89 +1,133 @@
-
 package Audio;
 
-
-import javafx.application.Platform;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
-import java.io.File;
+import ctr.ResourceLoader;
+import javax.sound.sampled.*;
+import java.io.InputStream;
 
 public class Player {
     private static final String ASSETS_DIR = "/res/";
     
-    private MediaPlayer musicaPlayer;
     private Config config;
-    
+    private Clip musicaPlayer;
     public Player(Config config) {
         this.config = config;
     }
     
     public void reproducirSFX(String archivo) {
-        if (!config.isSfxActivo() || config.getVolumenSFX() <= 0) return;
-        
-        Platform.runLater(() -> {
-            try {
-                MediaPlayer sfx = new MediaPlayer(new Media(new File(ASSETS_DIR + archivo).toURI().toString()));
-                sfx.setVolume(config.getVolumenSFX() / 100.0);
-                sfx.setOnEndOfMedia(sfx::dispose);
-                sfx.play();
-            } catch (Exception e) {
-                System.err.println("Error SFX: " + e.getMessage());
+
+        if (!config.isSfxActivo() || config.getVolumenSFX() <= 0) {
+            return;
+        }
+
+        try {
+
+            AudioInputStream ais =
+                AudioSystem.getAudioInputStream(
+                    openAudio(ASSETS_DIR + archivo)
+                );
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+
+            FloatControl gain =
+                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+
+            float volumen = config.getVolumenSFX() / 100f;
+
+            if (volumen == 0) {
+                gain.setValue(gain.getMinimum());
+            } else {
+                gain.setValue(
+                    (float)(20 * Math.log10(volumen))
+                );
             }
-        });
+
+            clip.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public void iniciarMusica() {
-        if (!config.isMusicaActiva() || config.getVolumenMusica() <= 0) return;
-        
-        Platform.runLater(() -> {
-            if (musicaPlayer != null) {
-                musicaPlayer.play();
-                return;
-            }
-            
-            try {
-                Media media = new Media(new File(ASSETS_DIR + "fondo.mp3").toURI().toString());
-                musicaPlayer = new MediaPlayer(media);
-                musicaPlayer.setVolume(config.getVolumenMusica() / 100.0);
-                musicaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                
-                double pos = config.getPosicionMusica();
-                musicaPlayer.setOnReady(() -> {
-                    if (pos > 0) musicaPlayer.seek(Duration.seconds(pos));
-                    musicaPlayer.play();
-                });
-            } catch (Exception e) {
-                System.err.println("Error música: " + e.getMessage());
-            }
-        });
+        if (!config.isMusicaActiva() || config.getVolumenMusica() <= 0) {
+            return;
+        }
+
+        if (musicaPlayer != null) {
+            musicaPlayer.start();
+            return;
+        }
+
+        try {
+
+            AudioInputStream ais =
+                AudioSystem.getAudioInputStream(
+                    openAudio(ASSETS_DIR + "fondo.wav")
+                );
+
+            musicaPlayer = AudioSystem.getClip();
+
+            musicaPlayer.open(ais);
+
+            actualizarVolumenMusica();
+
+            musicaPlayer.loop(Clip.LOOP_CONTINUOUSLY);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public void detenerMusica() {
+
         guardarPosicion();
-        Platform.runLater(() -> {
-            if (musicaPlayer != null) {
-                musicaPlayer.stop();
-                musicaPlayer.dispose();
-                musicaPlayer = null;
-            }
-        });
+
+        if (musicaPlayer != null) {
+            musicaPlayer.stop();
+            musicaPlayer.close();
+            musicaPlayer = null;
+        }
     }
     
     public void actualizarVolumenMusica() {
-        Platform.runLater(() -> {
-            if (musicaPlayer != null) {
-                musicaPlayer.setVolume(config.getVolumenMusica() / 100.0);
-                musicaPlayer.setMute(!config.isMusicaActiva());
-            }
-        });
+
+    if (musicaPlayer == null) {
+        return;
     }
+
+    try {
+
+        FloatControl gain =
+            (FloatControl) musicaPlayer.getControl(
+                FloatControl.Type.MASTER_GAIN
+            );
+
+        float volumen = config.getVolumenMusica() / 100f;
+
+        if (volumen == 0) {
+            gain.setValue(gain.getMinimum());
+        } else {
+            gain.setValue(
+                (float)(20 * Math.log10(volumen))
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
     
     public void guardarPosicion() {
-        Platform.runLater(() -> {
-            if (musicaPlayer != null) {
-                config.setPosicionMusica(musicaPlayer.getCurrentTime().toSeconds());
-            }
-        });
+        if (musicaPlayer == null) {
+            return;
+        }
+        config.setPosicionMusica(
+            musicaPlayer.getMicrosecondPosition() / 1_000_000.0
+        );
+    }
+
+    private InputStream openAudio(String resource) throws Exception {
+        return ResourceLoader.open(resource);
     }
 }

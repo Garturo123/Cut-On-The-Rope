@@ -11,8 +11,8 @@ import java.awt.image.BufferStrategy;
 
 public class View extends Canvas implements KeyListener  // Implementar KeyListener
 {
-    public static final int SCREEN_WIDTH = 800;
-    public static final int SCREEN_HEIGHT = 600;
+    public static final int SCREEN_WIDTH = 1000;
+    public static final int SCREEN_HEIGHT = 700;
     private BufferStrategy bs;
     private Scene scene;
     

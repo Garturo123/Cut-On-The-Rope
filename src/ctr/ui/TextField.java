@@ -50,6 +50,10 @@ public class TextField extends Entity {
     }
     
     public String getText() { return text; }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder == null ? "" : placeholder;
+    }
     
     public void setText(String nuevoTexto) {
         if (nuevoTexto != null && nuevoTexto.length() <= maxLength) {

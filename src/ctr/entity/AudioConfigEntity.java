@@ -4,8 +4,10 @@ import Audio.Manager;
 import Usuarios.Menu;
 import Usuarios.SessionManager;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -39,16 +41,16 @@ public class AudioConfigEntity extends Entity {
         // Inicializar valores desde el Manager
         actualizarValores();
         
-        btnVolver = new Button(scene, "Back", 50, 28, 50, 550);
-        btnSFXUp = new Button(scene, "+", 20, 28, 500, 220);
-        btnSFXDown = new Button(scene, "-", 20, 28, 400, 220);
-        btnMusicUp = new Button(scene, "+", 20, 28, 500, 320);
-        btnMusicDown = new Button(scene, "-", 20, 28, 400, 320);
-        btnMute = new Button(scene, mute ? "Unmute" : "Mute", 55, 28, 340, 420);
+        btnVolver = new Button(scene, I18n.t("back"), 50, 28, 415, 610);
+        btnSFXDown = new Button(scene, "-", 20, 28, 210, 220);
+        btnSFXUp = new Button(scene, "+", 20, 28, 700, 220);
+        btnMusicDown = new Button(scene, "-", 20, 28, 210, 370);
+        btnMusicUp = new Button(scene, "+", 20, 28, 700, 370);
+        btnMute = new Button(scene, mute ? I18n.t("unmute") : I18n.t("mute"), 55, 28, 415, 515);
         
         btnVolver.setListener(() -> {
             guardarCambios();
-            scene.cambiarAState(GameState.MENU_SESION);
+            scene.cambiarAState(GameState.SETTINGS);
         });
         
         btnSFXUp.setListener(() -> {
@@ -82,7 +84,7 @@ public class AudioConfigEntity extends Entity {
         btnMute.setListener(() -> {
             audioManager.alternarMuteGeneral();
             mute = audioManager.isMute();
-            btnMute.setText(mute ? "Unmute" : "Mute");
+            btnMute.setText(mute ? I18n.t("unmute") : I18n.t("mute"));
             contadorMensaje = 60;
             necesitaGuardar = true;
         });
@@ -133,37 +135,38 @@ public class AudioConfigEntity extends Entity {
     public void draw(Graphics2D g) {
         if (!visible) return;
         g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(32f));
-        g.drawString("AUDIO SETTINGS", 280, 100);
+        g.drawString(I18n.t("audio_settings"), 380, 100);
         
         // SFX Volume
         g.setFont(g.getFont().deriveFont(20f));
-        g.drawString("SFX Volume:", 250, 240);
-        g.drawString(sfxVolume + "%", 560, 240);
+        g.drawString(I18n.t("sfx_volume"), 420, 195);
+        g.drawString(sfxVolume + "%", 665, 195);
         
         // Barra de volumen SFX
         g.setColor(Color.GRAY);
-        g.fillRect(380, 215, 200, 15);
+        g.fillRect(410, 245, 240, 15);
         g.setColor(new Color(100, 200, 100));
-        g.fillRect(380, 215, sfxVolume * 2, 15);
+        g.fillRect(410, 245, (int)(sfxVolume * 2.4), 15);
         
+        g.setColor(Color.WHITE);
         // Music Volume
-        g.drawString("Music Volume:", 250, 340);
-        g.drawString(musicVolume + "%", 560, 340);
+        g.drawString(I18n.t("music_volume"), 420, 345);
+        g.drawString(musicVolume + "%", 665, 345);
         
         // Barra de volumen Música
         g.setColor(Color.GRAY);
-        g.fillRect(380, 315, 200, 15);
+        g.fillRect(410, 395, 240, 15);
         g.setColor(new Color(100, 150, 255));
-        g.fillRect(380, 315, musicVolume * 2, 15);
+        g.fillRect(410, 395, (int)(musicVolume * 2.4), 15);
         
         // Indicador de mute
         if (mute) {
             g.setColor(Color.RED);
-            g.drawString("🔇 MUTED", 380, 460);
+            g.drawString("🔇 MUTED", 455, 500);
         }
         
         btnSFXDown.draw(g);
@@ -176,7 +179,7 @@ public class AudioConfigEntity extends Entity {
         if (contadorMensaje > 0) {
             g.setColor(Color.YELLOW);
             g.setFont(g.getFont().deriveFont(14f));
-            g.drawString("Audio settings saved!", 330, 500);
+            g.drawString(I18n.t("audio_saved"), 420, 580);
         }
     }
     
@@ -185,9 +188,14 @@ public class AudioConfigEntity extends Entity {
         visible = (newGameState == GameState.AUDIO_CONFIG);
         if (visible) {
             actualizarValores();
-            btnMute.setText(mute ? "Unmute" : "Mute");
+            refreshText();
             necesitaGuardar = false;
         }
+    }
+
+    private void refreshText() {
+        btnVolver.setText(I18n.t("back"));
+        btnMute.setText(mute ? I18n.t("unmute") : I18n.t("mute"));
     }
     
     @Override

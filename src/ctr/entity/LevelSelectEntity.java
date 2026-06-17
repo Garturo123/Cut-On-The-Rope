@@ -4,8 +4,10 @@ import Usuarios.Niveles;
 import Usuarios.PuzzleService;
 import Usuarios.SessionManager;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -35,7 +37,7 @@ public class LevelSelectEntity extends Entity {
             levelButtons[i].setListener(() -> seleccionarNivel(level));
         }
 
-        btnBack = new Button(scene, "Back", 50, 42, 315, 500);
+        btnBack = new Button(scene, I18n.t("back"), 50, 42, 415, 610);
         btnBack.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
     }
 
@@ -45,7 +47,7 @@ public class LevelSelectEntity extends Entity {
             return;
         }
 
-        mensaje = "Complete the previous level first";
+        mensaje = I18n.t("complete_previous");
         contadorMensaje = 120;
     }
 
@@ -66,10 +68,10 @@ public class LevelSelectEntity extends Entity {
         if (!visible) return;
 
         g.setColor(new Color(0, 0, 0, 220));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(32f));
-        g.drawString("SELECT LEVEL", 300, 95);
+        g.drawString(I18n.t("level_select"), 390, 95);
 
         g.setFont(g.getFont().deriveFont(15f));
         for (int i = 0; i < MAX_LEVEL; i++) {
@@ -89,7 +91,7 @@ public class LevelSelectEntity extends Entity {
 
             levelButtons[i].draw(g);
             g.setColor(unlocked ? Color.WHITE : Color.LIGHT_GRAY);
-            g.drawString(unlocked ? "Unlocked" : "Locked", x + 45, y + 78);
+            g.drawString(unlocked ? I18n.t("unlocked") : I18n.t("locked"), x + 45, y + 78);
             g.setColor(new Color(255, 215, 80));
             g.drawString(formatStars(stars), x + 52, y + 102);
         }
@@ -125,10 +127,14 @@ public class LevelSelectEntity extends Entity {
         if (visible) {
             niveles = puzzleService.obtenerPuzzles();
             contadorMensaje = 0;
+            for (int i = 0; i < levelButtons.length; i++) {
+                levelButtons[i].setText(I18n.t("level") + " " + (i + 1));
+            }
             for (Button button : levelButtons) {
                 button.reset();
             }
             btnBack.reset();
+            btnBack.setText(I18n.t("back"));
         }
     }
 }

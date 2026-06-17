@@ -81,7 +81,8 @@ public class AuthService {
         if (idiomaSeleccionadoTemporal != null)
             nuevo.setIdioma(idiomaSeleccionadoTemporal);
 
-        repo.guardar(nuevo);
+        if (!repo.guardar(nuevo))
+            return "Error al guardar usuario";
 
         logger.registrar(
             nuevo.getUsername(),
@@ -154,7 +155,8 @@ public class AuthService {
             return "Account is already active";
 
         usuario.reactivarCuenta();
-        repo.guardar(usuario);
+        if (!repo.guardar(usuario))
+            return "Error al guardar usuario";
 
         logger.registrar(
             usuario.getUsername(),

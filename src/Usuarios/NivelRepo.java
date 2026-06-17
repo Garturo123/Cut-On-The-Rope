@@ -4,10 +4,14 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class NivelRepo {
-    private static final String RUTA_BASE = "data/usuarios/";
+    private static final String[] RUTAS_BASE = {"build/data/usuarios/", "data/usuarios/"};
     
     public ArrayList<Niveles> cargar(String username) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(rutaArchivo(username)))) {
+        File archivo = archivoExistente(username);
+        if (archivo == null) {
+            return crearPuzzlesIniciales();
+        }
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(archivo))) {
             return (ArrayList<Niveles>) in.readObject();
         } catch (Exception e) {
             return crearPuzzlesIniciales();
@@ -15,13 +19,21 @@ public class NivelRepo {
     }
     
     public void guardar(String username, ArrayList<Niveles> puzzles) {
-        try {
-            new File(RUTA_BASE + username).mkdirs();
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(rutaArchivo(username)))) {
-                out.writeObject(puzzles);
+        for (String rutaBase : RUTAS_BASE) {
+            try {
+                File carpeta = new File(rutaBase + username);
+                carpeta.mkdirs();
+                if (!carpeta.isDirectory()) {
+                    continue;
+                }
+                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(rutaArchivo(rutaBase, username)))) {
+                    out.writeObject(puzzles);
+                    return;
+                }
             }
-        } catch (Exception e) {
-            System.err.println("Error guardando puzzles: " + e.getMessage());
+            catch (Exception e) {
+                System.err.println("Error guardando puzzles en " + rutaBase + ": " + e.getMessage());
+            }
         }
     }
     
@@ -35,7 +47,17 @@ public class NivelRepo {
         return puzzles;
     }
     
-    private String rutaArchivo(String username) {
-        return RUTA_BASE + username + "/puzzles.dat";
+    private String rutaArchivo(String rutaBase, String username) {
+        return rutaBase + username + "/puzzles.dat";
+    }
+
+    private File archivoExistente(String username) {
+        for (String rutaBase : RUTAS_BASE) {
+            File archivo = new File(rutaArchivo(rutaBase, username));
+            if (archivo.exists()) {
+                return archivo;
+            }
+        }
+        return null;
     }
 }

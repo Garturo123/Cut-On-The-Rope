@@ -3,7 +3,6 @@ package Audio;
 import Usuarios.Menu;
 import Usuarios.SessionManager;
 import Usuarios.Usuario;
-import javafx.embed.swing.JFXPanel;
 import javax.swing.*;
 
 public class Manager {
@@ -12,13 +11,7 @@ public class Manager {
     private final Menu menus;
     private final SessionManager session;  // Ahora se inicializa
 
-    static { 
-        try {
-            new JFXPanel(); 
-        } catch (Exception e) {
-            System.err.println("JavaFX no disponible: " + e.getMessage());
-        }
-    }
+   
     
     // ✅ CONSTRUCTOR CORREGIDO
     public Manager(Menu menus, SessionManager session) {
@@ -99,6 +92,6 @@ public class Manager {
     }
 
     public boolean isMute() {
-        return config.isMute;
+        return config.isMute();
     }
 }

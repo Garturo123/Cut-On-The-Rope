@@ -6,8 +6,10 @@ import Usuarios.SessionManager;
 import Usuarios.Usuario;
 import Usuarios.UsuarioRepo;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -40,17 +42,15 @@ public class PerfilEntity extends Entity {
         this.authService = new AuthService(usuarioRepo, sessionManager);
         this.audioManager = audioManager;
         
-        int xCol1 = 105;
-        int xCol2 = 355;
-        int yStart = 480;
+        int yStart = 500;
         
-        btnVolver = new Button(scene, "Back", 50, 28, 50, 535);
-        btnCerrarSesion = new Button(scene, "Logout", 50, 28, xCol1, yStart);
-        btnEliminarCuenta = new Button(scene, "Delete", 55, 28, xCol1 + 185, yStart);
-        btnCambiarAvatar = new Button(scene, "Avatar", 55, 28, xCol2 + 185, yStart);
-        btnConfigAudio = new Button(scene, "Audio", 55, 28, xCol1, yStart + 50);
-        btnAmigos = new Button(scene, "Friends", 50, 28, xCol1 + 185, yStart + 50);
-        btnStats = new Button(scene, "Stats", 55, 28, xCol2 + 185, yStart + 50);
+        btnCerrarSesion = new Button(scene, I18n.t("logout"), 50, 28, 90, yStart);
+        btnEliminarCuenta = new Button(scene, "Delete", 55, 28, 300, yStart);
+        btnCambiarAvatar = new Button(scene, I18n.t("avatar"), 55, 28, 510, yStart);
+        btnConfigAudio = new Button(scene, I18n.t("audio"), 55, 28, 720, yStart);
+        btnVolver = new Button(scene, I18n.t("back"), 50, 28, 90, yStart + 85);
+        btnAmigos = new Button(scene, I18n.t("friends"), 50, 28, 300, yStart + 85);
+        btnStats = new Button(scene, I18n.t("stats"), 55, 28, 510, yStart + 85);
         
         btnVolver.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
         btnCerrarSesion.setListener(() -> {
@@ -133,7 +133,7 @@ public class PerfilEntity extends Entity {
         
         // Fondo
         g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         
         // Avatar
         if (avatarActual != null) {
@@ -174,8 +174,18 @@ public class PerfilEntity extends Entity {
     public void gameStateChanged(GameState newGameState) {
         visible = (newGameState == GameState.PERFIL);
         if (visible) {
+            refreshText();
             necesitaActualizar = true;
         }
+    }
+
+    private void refreshText() {
+        btnCerrarSesion.setText(I18n.t("logout"));
+        btnCambiarAvatar.setText(I18n.t("avatar"));
+        btnConfigAudio.setText(I18n.t("audio"));
+        btnVolver.setText(I18n.t("back"));
+        btnAmigos.setText(I18n.t("friends"));
+        btnStats.setText(I18n.t("stats"));
     }
     
     @Override

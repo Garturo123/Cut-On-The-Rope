@@ -5,6 +5,7 @@ import Usuarios.SessionManager;
 import Usuarios.Usuario;
 import Usuarios.UsuarioRepo;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
 import ctr.View;
@@ -20,7 +21,7 @@ public class MenuSesionEntity extends Entity {
     private final AuthService authService;
     private final Button btnPlay;
     private final Button btnPerfil;
-    private final Button btnAudio;
+    private final Button btnSettings;
     private final Button btnAmigos;
     private final Button btnRetos;
     private final Button btnStats;
@@ -39,20 +40,20 @@ public class MenuSesionEntity extends Entity {
         titleShadow = loadImageFromResource("/res/title_shadow.png");
         loadImageFromResource("/res/title_background.png");
 
-        btnPlay = new Button(scene, "Play", 60, 42, 315, 225);
-        btnPerfil = new Button(scene, "Profile", 45, 42, 315, 280);
-        btnAudio = new Button(scene, "Audio", 55, 42, 315, 335);
-        btnAmigos = new Button(scene, "Friends", 45, 42, 315, 390);
-        btnRetos = new Button(scene, "Challenges", 20, 42, 315, 445);
-        btnStats = new Button(scene, "Stats", 60, 42, 130, 500);
-        btnLogout = new Button(scene, "Logout", 50, 42, 500, 500);
+        btnPlay = new Button(scene, I18n.t("play"), 60, 42, 415, 220);
+        btnPerfil = new Button(scene, I18n.t("profile"), 45, 42, 415, 290);
+        btnAmigos = new Button(scene, I18n.t("friends"), 45, 42, 415, 360);
+        btnRetos = new Button(scene, I18n.t("challenges"), 20, 42, 415, 430);
+        btnStats = new Button(scene, I18n.t("stats"), 60, 42, 415, 500);
+        btnSettings = new Button(scene, I18n.t("settings"), 30, 42, 275, 590);
+        btnLogout = new Button(scene, I18n.t("logout"), 50, 42, 555, 590);
 
         btnPlay.setListener(() -> scene.cambiarAState(GameState.LEVEL_SELECT));
         btnPerfil.setListener(() -> scene.cambiarAState(GameState.PERFIL));
-        btnAudio.setListener(() -> scene.cambiarAState(GameState.AUDIO_CONFIG));
         btnAmigos.setListener(() -> scene.cambiarAState(GameState.AMIGOS_LIST));
         btnRetos.setListener(() -> scene.cambiarAState(GameState.CHALLENGE_SELECT));
         btnStats.setListener(() -> scene.cambiarAState(GameState.STATS));
+        btnSettings.setListener(() -> scene.cambiarAState(GameState.SETTINGS));
         btnLogout.setListener(() -> {
             authService.logout();
             scene.cambiarAState(GameState.MENU_PRINCIPAL);
@@ -66,10 +67,10 @@ public class MenuSesionEntity extends Entity {
         titleShadowAngle += 0.0025;
         btnPlay.update();
         btnPerfil.update();
-        btnAudio.update();
         btnAmigos.update();
         btnRetos.update();
         btnStats.update();
+        btnSettings.update();
         btnLogout.update();
     }
 
@@ -77,26 +78,26 @@ public class MenuSesionEntity extends Entity {
     public void draw(Graphics2D g) {
         if (!visible) return;
 
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(image, 0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT, null);
         titleShadowTransform.setToIdentity();
         titleShadowTransform.translate(View.SCREEN_WIDTH / 2, View.SCREEN_HEIGHT / 2);
         titleShadowTransform.rotate(titleShadowAngle);
         titleShadowTransform.translate(-titleShadow.getWidth() / 2, -titleShadow.getHeight() / 2);
         g.drawImage(titleShadow, titleShadowTransform, null);
-        g.drawImage(title, 180, 55, null);
+        g.drawImage(title, (View.SCREEN_WIDTH - title.getWidth()) / 2, 50, null);
 
         Usuario usuario = sessionManager.getUsuarioActual();
         String nombre = usuario != null ? usuario.getNombreCompleto() : "Player";
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(20f));
-        g.drawString("Welcome, " + nombre, 315, 205);
+        g.drawString(I18n.t("menu_welcome") + nombre, 415, 200);
 
         btnPlay.draw(g);
         btnPerfil.draw(g);
-        btnAudio.draw(g);
         btnAmigos.draw(g);
         btnRetos.draw(g);
         btnStats.draw(g);
+        btnSettings.draw(g);
         btnLogout.draw(g);
     }
 
@@ -104,13 +105,24 @@ public class MenuSesionEntity extends Entity {
     public void gameStateChanged(GameState newGameState) {
         visible = (newGameState == GameState.MENU_SESION);
         if (visible) {
+            refreshText();
             btnPlay.reset();
             btnPerfil.reset();
-            btnAudio.reset();
             btnAmigos.reset();
             btnRetos.reset();
             btnStats.reset();
+            btnSettings.reset();
             btnLogout.reset();
         }
+    }
+
+    private void refreshText() {
+        btnPlay.setText(I18n.t("play"));
+        btnPerfil.setText(I18n.t("profile"));
+        btnAmigos.setText(I18n.t("friends"));
+        btnRetos.setText(I18n.t("challenges"));
+        btnStats.setText(I18n.t("stats"));
+        btnSettings.setText(I18n.t("settings"));
+        btnLogout.setText(I18n.t("logout"));
     }
 }

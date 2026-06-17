@@ -4,8 +4,10 @@ import Usuarios.AuthService;
 import Usuarios.SessionManager;
 import Usuarios.UsuarioRepo;
 import ctr.Entity;
+import ctr.I18n;
 import ctr.Scene;
 import ctr.Scene.GameState;
+import ctr.View;
 import ctr.ui.Button;
 import ctr.ui.TextField;
 import java.awt.Color;
@@ -42,8 +44,8 @@ public class RegisterEntity extends Entity {
         txtPassword = new TextField(scene, ancho, 35, x, 260, "Password", true);
         txtConfirmPassword = new TextField(scene, ancho, 35, x, 310, "Confirm Password", true);
         
-        btnRegister = new Button(scene, "Register", 40, 42, 340, 380);
-        btnBack = new Button(scene, "Back", 50, 42, 340, 430);
+        btnRegister = new Button(scene, I18n.t("register"), 40, 42, 340, 380);
+        btnBack = new Button(scene, I18n.t("back"), 50, 42, 340, 430);
         
         btnRegister.setListener(() -> intentarRegistro());
         btnBack.setListener(() -> scene.cambiarAState(GameState.MENU_PRINCIPAL));
@@ -56,7 +58,7 @@ public class RegisterEntity extends Entity {
         String nombre = txtNombreCompleto.getText();
         
         if (username.isEmpty() || password.isEmpty() || nombre.isEmpty()) {
-            mostrarMensaje("Complete all fields", true);
+            mostrarMensaje(I18n.t("complete_fields"), true);
             return;
         }
         
@@ -70,6 +72,10 @@ public class RegisterEntity extends Entity {
         if (resultado.equals("Usuario creado correctamente")) {
             mostrarMensaje(resultado, false);
             authService.login(username, password);
+            if (sessionManager.getUsuarioActual() != null) {
+                sessionManager.getUsuarioActual().setIdioma(I18n.getLanguage());
+                usuarioRepo.guardar(sessionManager.getUsuarioActual());
+            }
             scene.cambiarAState(GameState.MENU_SESION);
         } else {
             mostrarMensaje(resultado, true);
@@ -103,11 +109,11 @@ public class RegisterEntity extends Entity {
         if (!visible) return;
         
         g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(32f));
-        g.drawString("REGISTER", 340, 110);
+        g.drawString(I18n.t("register").toUpperCase(), 340, 110);
         
         txtUsername.draw(g);
         txtNombreCompleto.draw(g);
@@ -134,7 +140,13 @@ public class RegisterEntity extends Entity {
             txtConfirmPassword.clear();
             mensaje = "";
             contadorMensaje = 0;
+            refreshText();
         }
+    }
+
+    private void refreshText() {
+        btnRegister.setText(I18n.t("register"));
+        btnBack.setText(I18n.t("back"));
     }
     
     @Override

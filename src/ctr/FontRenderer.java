@@ -18,9 +18,10 @@ public class FontRenderer
     {
         try 
         {
-            InputStream is = FontRenderer.class.getResourceAsStream("/res/GOODDP.TTF");
-            font = Font.createFont(Font.TRUETYPE_FONT, is);
-            font = font.deriveFont(40f);
+            try (InputStream is = ResourceLoader.open("/res/GOODDP.TTF")) {
+                font = Font.createFont(Font.TRUETYPE_FONT, is);
+                font = font.deriveFont(40f);
+            }
         } catch (Exception ex) 
         {
             Logger.getLogger(FontRenderer.class.getName()).log(Level.SEVERE, null, ex);

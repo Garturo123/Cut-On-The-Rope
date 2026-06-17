@@ -1,5 +1,6 @@
 package ctr;
 
+import static ctr.Scene.GameState.*;
 import Audio.Manager;
 import Usuarios.ActividadLogger;
 import Usuarios.Menu;
@@ -8,9 +9,43 @@ import Usuarios.PuzzleService;
 import Usuarios.SessionManager;
 import Usuarios.Usuario;
 import Usuarios.UsuarioRepo;
-import static ctr.Scene.GameState.*;
-import ctr.entity.*;
-import ctr.model.*;
+
+import ctr.entity.AirCushionEntity;
+import ctr.entity.AmigosListEntity;
+import ctr.entity.AudioConfigEntity;
+import ctr.entity.AvatarSelectorEntity;
+import ctr.entity.BackgroundEntity;
+import ctr.entity.BubbleEntity;
+import ctr.entity.CandyEntity;
+import ctr.entity.ChallengeSelectEntity;
+import ctr.entity.CurtainEntity;
+import ctr.entity.FadeEffectEntity;
+import ctr.entity.GameOverEntity;
+import ctr.entity.InitializerEntity;
+import ctr.entity.LanguageEntity;
+import ctr.entity.LevelClearedEntity;
+import ctr.entity.LevelSelectEntity;
+import ctr.entity.LoginEntity;
+import ctr.entity.MenuPrincipalEntity;
+import ctr.entity.MenuSesionEntity;
+import ctr.entity.PerfilEntity;
+import ctr.entity.PetEntity;
+import ctr.entity.PinRopeEntity;
+import ctr.entity.ReactivateAccountEntity;
+import ctr.entity.RegisterEntity;
+import ctr.entity.RopeEntity;
+import ctr.entity.SpikesEntity;
+import ctr.entity.StarEntity;
+import ctr.entity.StatsEntity;
+import ctr.entity.SettingsEntity;
+import ctr.entity.TitleEntity;
+import ctr.model.AirCushion;
+import ctr.model.Bubble;
+import ctr.model.Model;
+import ctr.model.PinRope;
+import ctr.model.Rope;
+import ctr.model.Spikes;
+import ctr.model.Star;
 import ctr.ui.TextField;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -20,7 +55,7 @@ import java.util.List;
 public class Scene {
     private static final int MAX_LEVEL = 5;
 
-    private final Model model = new Model(800, 600, 10);
+    private final Model model = new Model(View.SCREEN_WIDTH, View.SCREEN_HEIGHT, 10);
     protected List<Entity> entities = new ArrayList<Entity>();
     protected List<Entity> levelEntities = new ArrayList<Entity>();
     private TextField textFieldFocused = null;
@@ -29,7 +64,7 @@ public class Scene {
         INITIALIZING, OL_PRESENTS, TITLE, LEVEL_SELECT, READY, PLAYING,
         LEVEL_CLEARED, GAME_OVER,
         MENU_PRINCIPAL, LOGIN, REGISTER, REACTIVATE_ACCOUNT, MENU_SESION, PERFIL,
-        AVATAR_SELECTOR, AUDIO_CONFIG, AMIGOS_LIST, CHALLENGE_SELECT, STATS
+        AVATAR_SELECTOR, AUDIO_CONFIG, SETTINGS, LANGUAGE, AMIGOS_LIST, CHALLENGE_SELECT, STATS
     }
 
     private GameState gameState = GameState.INITIALIZING;
@@ -54,6 +89,8 @@ public class Scene {
     private PerfilEntity perfilEntity;
     private AvatarSelectorEntity avatarSelector;
     private AudioConfigEntity audioConfigEntity;
+    private SettingsEntity settingsEntity;
+    private LanguageEntity languageEntity;
     private AmigosListEntity amigosListEntity;
     private ChallengeSelectEntity challengeSelectEntity;
     private StatsEntity statsEntity;
@@ -75,7 +112,15 @@ public class Scene {
 
     public void setState(GameState gameState) {
         if (this.gameState != gameState) {
+            Usuario usuario = seccion.getUsuarioActual();
+            if (usuario != null) {
+                I18n.setLanguage(usuario.getIdioma());
+            }
             this.gameState = gameState;
+
+            if (fadeEffect != null && shouldClearFade(gameState)) {
+                fadeEffect.clear();
+            }
 
             if (gameState == PLAYING) {
                 audioManager.iniciarMusicaPartida();
@@ -85,6 +130,30 @@ public class Scene {
                 entity.gameStateChanged(gameState);
             for (Entity entity : entities)
                 entity.gameStateChanged(gameState);
+        }
+    }
+
+    private boolean shouldClearFade(GameState gameState) {
+        switch (gameState) {
+            case MENU_PRINCIPAL:
+            case LOGIN:
+            case REGISTER:
+            case REACTIVATE_ACCOUNT:
+            case MENU_SESION:
+            case PERFIL:
+            case AVATAR_SELECTOR:
+            case AUDIO_CONFIG:
+            case SETTINGS:
+            case LANGUAGE:
+            case AMIGOS_LIST:
+            case CHALLENGE_SELECT:
+            case STATS:
+            case LEVEL_SELECT:
+            case READY:
+            case PLAYING:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -137,6 +206,11 @@ public class Scene {
                 textFieldFocused = registerEntity.getTxtConfirmPassword();
             }
         }
+        if (amigosListEntity != null && amigosListEntity.isVisible()) {
+            if (amigosListEntity.getTxtUsername().isFocused()) {
+                textFieldFocused = amigosListEntity.getTxtUsername();
+            }
+        }
     }
 
     private void createAllEntities() {
@@ -160,6 +234,8 @@ public class Scene {
         perfilEntity = new PerfilEntity(this, repo, seccion, audioManager);
         avatarSelector = new AvatarSelectorEntity(this, seccion);
         audioConfigEntity = new AudioConfigEntity(this, audioManager, menus, seccion);
+        settingsEntity = new SettingsEntity(this, seccion);
+        languageEntity = new LanguageEntity(this, seccion, repo);
         amigosListEntity = new AmigosListEntity(this, menus, seccion);
         challengeSelectEntity = new ChallengeSelectEntity(this, menus, seccion);
         statsEntity = new StatsEntity(this, menus, seccion);
@@ -173,6 +249,8 @@ public class Scene {
         entities.add(perfilEntity);
         entities.add(avatarSelector);
         entities.add(audioConfigEntity);
+        entities.add(settingsEntity);
+        entities.add(languageEntity);
         entities.add(amigosListEntity);
         entities.add(challengeSelectEntity);
         entities.add(statsEntity);
@@ -228,9 +306,9 @@ public class Scene {
             model.addSlashTrail(-1, -1);
         }
         for (Entity entity : levelEntities)
-            entity.update();
+            entity.updateFixed();
         for (Entity entity : entities)
-            entity.update();
+            entity.updateFixed();
         model.update();
     }
 
@@ -288,4 +366,5 @@ public class Scene {
     public void irAEstadisticas() { setState(STATS); }
     public void irASeleccionNivel() { setState(LEVEL_SELECT); }
     public void irAMenuSesion() { setState(MENU_SESION); }
+    public void irASettings() { setState(SETTINGS); }
 }

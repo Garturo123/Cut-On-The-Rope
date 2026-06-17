@@ -42,7 +42,7 @@ public class PetEntity extends Entity implements PetListener, ModelListener
     }
     
     @Override
-    public void updatePlaying() 
+    public void updateFixedPlaying() 
     {
         updateAnimation();
         switch (instructionPointer) 
@@ -99,7 +99,6 @@ public class PetEntity extends Entity implements PetListener, ModelListener
 
     @Override
     public void onCandyEscaped()    {   animation.selectAnimation("closeMouth");    }
-
     @Override
     public void onFailure()
     {
