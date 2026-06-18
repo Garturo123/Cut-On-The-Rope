@@ -20,11 +20,8 @@ public class MenuSesionEntity extends Entity {
     private final SessionManager sessionManager;
     private final AuthService authService;
     private final Button btnPlay;
-    private final Button btnPerfil;
+    private final Button btnSocial;
     private final Button btnSettings;
-    private final Button btnAmigos;
-    private final Button btnRetos;
-    private final Button btnStats;
     private final Button btnLogout;
     private final BufferedImage title;
     private final BufferedImage titleShadow;
@@ -41,18 +38,12 @@ public class MenuSesionEntity extends Entity {
         loadImageFromResource("/res/title_background.png");
 
         btnPlay = new Button(scene, I18n.t("play"), 60, 42, 415, 220);
-        btnPerfil = new Button(scene, I18n.t("profile"), 45, 42, 415, 290);
-        btnAmigos = new Button(scene, I18n.t("friends"), 45, 42, 415, 360);
-        btnRetos = new Button(scene, I18n.t("challenges"), 20, 42, 415, 430);
-        btnStats = new Button(scene, I18n.t("stats"), 60, 42, 415, 500);
-        btnSettings = new Button(scene, I18n.t("settings"), 30, 42, 275, 590);
-        btnLogout = new Button(scene, I18n.t("logout"), 50, 42, 555, 590);
+        btnSocial = new Button(scene, I18n.t("social_menu"), 25, 42, 415, 320);
+        btnSettings = new Button(scene, I18n.t("settings"), 30, 42, 415, 420);
+        btnLogout = new Button(scene, I18n.t("logout"), 50, 42, 415, 520);
 
         btnPlay.setListener(() -> scene.cambiarAState(GameState.LEVEL_SELECT));
-        btnPerfil.setListener(() -> scene.cambiarAState(GameState.PERFIL));
-        btnAmigos.setListener(() -> scene.cambiarAState(GameState.AMIGOS_LIST));
-        btnRetos.setListener(() -> scene.cambiarAState(GameState.CHALLENGE_SELECT));
-        btnStats.setListener(() -> scene.cambiarAState(GameState.STATS));
+        btnSocial.setListener(() -> scene.cambiarAState(GameState.SOCIAL_MENU));
         btnSettings.setListener(() -> scene.cambiarAState(GameState.SETTINGS));
         btnLogout.setListener(() -> {
             authService.logout();
@@ -66,10 +57,7 @@ public class MenuSesionEntity extends Entity {
 
         titleShadowAngle += 0.0025;
         btnPlay.update();
-        btnPerfil.update();
-        btnAmigos.update();
-        btnRetos.update();
-        btnStats.update();
+        btnSocial.update();
         btnSettings.update();
         btnLogout.update();
     }
@@ -93,10 +81,7 @@ public class MenuSesionEntity extends Entity {
         g.drawString(I18n.t("menu_welcome") + nombre, 415, 200);
 
         btnPlay.draw(g);
-        btnPerfil.draw(g);
-        btnAmigos.draw(g);
-        btnRetos.draw(g);
-        btnStats.draw(g);
+        btnSocial.draw(g);
         btnSettings.draw(g);
         btnLogout.draw(g);
     }
@@ -107,10 +92,7 @@ public class MenuSesionEntity extends Entity {
         if (visible) {
             refreshText();
             btnPlay.reset();
-            btnPerfil.reset();
-            btnAmigos.reset();
-            btnRetos.reset();
-            btnStats.reset();
+            btnSocial.reset();
             btnSettings.reset();
             btnLogout.reset();
         }
@@ -118,10 +100,7 @@ public class MenuSesionEntity extends Entity {
 
     private void refreshText() {
         btnPlay.setText(I18n.t("play"));
-        btnPerfil.setText(I18n.t("profile"));
-        btnAmigos.setText(I18n.t("friends"));
-        btnRetos.setText(I18n.t("challenges"));
-        btnStats.setText(I18n.t("stats"));
+        btnSocial.setText(I18n.t("social_menu"));
         btnSettings.setText(I18n.t("settings"));
         btnLogout.setText(I18n.t("logout"));
     }

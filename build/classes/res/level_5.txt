@@ -11,16 +11,22 @@
 # sp = spikes               -> sp, name, x, y, w, h (h=40 / w=95, 170, 255, 325)
 # st = star                 -> st, name, x, y, radius
 
-pe, pet, 380, 500, 25, 50
+pe, pet, 500, 520, 25, 55
 
-ro, rope, 380, 50, 380, 120
+ro, rope, 380, 60, 380, 180
+ro, rope2, 560, 60, 500, 220
 
-ca, candy, 380, 120, 25
+ac, air_cushion, 430, 330, 0
+bu, bubble, 500, 390, 45
+
+ca, candy, 430, 220, 25
 
 pi, pin, rope
+pi, pin2, rope2
 
-cr, rope, 1
+cr, rope, 0
+cr, rope2, 1
 
-st, star, 380, 220, 15
-st, star2, 380, 280, 15
-st, star3, 380, 340, 15
+st, star, 455, 285, 15
+st, star2, 500, 390, 15
+st, star3, 500, 480, 15

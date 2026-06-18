@@ -166,7 +166,7 @@ public class AudioConfigEntity extends Entity {
         // Indicador de mute
         if (mute) {
             g.setColor(Color.RED);
-            g.drawString("🔇 MUTED", 455, 500);
+            g.drawString("MUTED", 455, 500);
         }
         
         btnSFXDown.draw(g);

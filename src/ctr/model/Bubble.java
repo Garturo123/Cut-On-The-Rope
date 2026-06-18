@@ -8,12 +8,28 @@ import java.util.List;
 
 public class Bubble 
 {
+    private static final double FOLLOW_X_STRENGTH = 0.035;
+    private static final double FOLLOW_Y_STRENGTH = 0.12;
+    private static final double FREE_FOLLOW_Y_STRENGTH = 0.24;
+    private static final double HORIZONTAL_VELOCITY_DAMPING = 0.10;
+    private static final double FALLING_VELOCITY_DAMPING = 0.20;
+    private static final double RISING_VELOCITY_DAMPING = 0.82;
+    private static final double FREE_RISING_VELOCITY_DAMPING = 1.0;
+    private static final double FREE_RISE_FORCE = -1.05;
+    private static final double HOLD_RISE_FORCE = -0.5;
+    private static final double TARGET_RISE_SPEED = 4.5;
+    private static final double ANCHOR_FORCE_X = 0.08;
+    private static final double ANCHOR_FORCE_Y = 0.05;
+    private static final double MAX_ANCHOR_FORCE_X = 0.8;
+    private static final double MAX_ANCHOR_FORCE_Y = 1.2;
+
     private final Model model;
     private final Vec2 position = new Vec2();
     private double radius;
     private boolean visible = true;
     private Candy candy;
     private final Vec2 upForce;
+    private final Vec2 anchorForce = new Vec2();
     private final Vec2 vTmp = new Vec2();
     private final List<BubbleListener> listeners = new ArrayList<BubbleListener>();
     
@@ -48,23 +64,40 @@ public class Bubble
                 burst();
                 return;
             }
-            if(candy.getAttachedRopes().isEmpty())
-                upForce.y = -0.6;
-            else if(candy.getPoints()[0].getVelocity().y > 0.1)
+            boolean freeCandy = candy.getAttachedRopes().isEmpty();
+            double verticalVelocity = candy.getAverageVelocityY();
+            if(freeCandy)
+                upForce.y = verticalVelocity > -TARGET_RISE_SPEED ? FREE_RISE_FORCE : HOLD_RISE_FORCE;
+            else if(verticalVelocity > 0.1)
                 upForce.y -= 0.02;
             candy.addForce(upForce);
             Vec2 candyPivot = candy.getPivot();
-            position.x += (candyPivot.x - position.x) * 0.95;
-            position.y += (candyPivot.y - position.y) * 0.95;
+            double fallingDamping = verticalVelocity > 0.1
+                ? FALLING_VELOCITY_DAMPING
+                : (freeCandy ? FREE_RISING_VELOCITY_DAMPING : RISING_VELOCITY_DAMPING);
+            candy.dampenVelocity(HORIZONTAL_VELOCITY_DAMPING, fallingDamping);
+            double anchorY = clamp((position.y - candyPivot.y) * ANCHOR_FORCE_Y, -MAX_ANCHOR_FORCE_Y, MAX_ANCHOR_FORCE_Y);
+            if(freeCandy && verticalVelocity <= 0 && anchorY > 0)
+                anchorY = 0;
+            anchorForce.set(
+                clamp((position.x - candyPivot.x) * ANCHOR_FORCE_X, -MAX_ANCHOR_FORCE_X, MAX_ANCHOR_FORCE_X),
+                anchorY
+            );
+            candy.addForce(anchorForce);
+            if(freeCandy)
+                candy.limitNextUpwardVelocity(TARGET_RISE_SPEED);
+            position.x += (candyPivot.x - position.x) * FOLLOW_X_STRENGTH;
+            position.y += (candyPivot.y - position.y) * (freeCandy ? FREE_FOLLOW_Y_STRENGTH : FOLLOW_Y_STRENGTH);
         }
         else 
         {
             Vec2 candyPivot = model.getCandy().getPivot();
             vTmp.set(candyPivot);
             vTmp.sub(position);
-            if (candy == null && vTmp.getSize() <= radius && model.getCandy().isVisible()) 
+            if (candy == null && vTmp.getSize() <= radius + model.getCandy().getRadius() && model.getCandy().isVisible()) 
             {
                 candy = model.getCandy();
+                upForce.set(0, -1);
                 fireOnCandyCaught();
             }
         }
@@ -105,5 +138,10 @@ public class Bubble
     {
         for (BubbleListener listener : listeners)
             listener.onCandyCaught();
+    }
+
+    private double clamp(double value, double min, double max)
+    {
+        return Math.max(min, Math.min(max, value));
     }
 }

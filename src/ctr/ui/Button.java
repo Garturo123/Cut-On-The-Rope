@@ -66,6 +66,7 @@ public class Button extends Entity {
         if (over && !Mouse.pressedConsumed && Mouse.pressed) {
             Mouse.pressedConsumed = true;
             pressed = true;
+            scene.reproducirSFX("SoundEfects/tap.wav");
             if (listener != null)
                 listener.onClick();
         }

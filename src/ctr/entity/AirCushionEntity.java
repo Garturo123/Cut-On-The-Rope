@@ -47,5 +47,10 @@ public class AirCushionEntity extends Entity implements AirCushionListener
     public void gameStateChanged(Scene.GameState newGameState)  {   visible = newGameState == Scene.GameState.PLAYING;  }    
 
     @Override
-    public void onAirCushionFire()  {   animation.selectAnimation("pump");  }
+    public void onAirCushionFire()
+    {
+        int pump = 1 + (int) (Math.random() * 4);
+        scene.reproducirSFX("SoundEfects/pump_" + pump + ".wav");
+        animation.selectAnimation("pump");
+    }
 }

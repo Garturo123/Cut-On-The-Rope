@@ -14,7 +14,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChallengeSelectEntity extends Entity {
     private static final int ROW_X = 90;
@@ -27,6 +31,7 @@ public class ChallengeSelectEntity extends Entity {
     private final SessionManager sessionManager;
     private final Button btnReto;
     private final Button btnVolver;
+    private final Map<String, BufferedImage> avatarCache = new HashMap<String, BufferedImage>();
     private int selectedIndex = -1;
     private String mensaje = "";
     private int contadorMensaje;
@@ -38,15 +43,21 @@ public class ChallengeSelectEntity extends Entity {
         btnReto = new Button(scene, I18n.t("challenge"), 28, 42, 275, 610);
         btnVolver = new Button(scene, I18n.t("back"), 50, 42, 555, 610);
         btnReto.setListener(() -> enviarReto());
-        btnVolver.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
+        btnVolver.setListener(() -> scene.cambiarAState(GameState.SOCIAL_MENU));
     }
 
     private void enviarReto() {
         List<Usuario> jugadores = getJugadores();
         if (selectedIndex < 0 || selectedIndex >= jugadores.size()) {
             mensaje = I18n.t("select_player");
+        } else if (isCurrentUser(jugadores.get(selectedIndex))) {
+            mensaje = I18n.t("cant_challenge_self");
         } else {
-            mensaje = menus.iniciarChallenge(jugadores.get(selectedIndex).getUsername());
+            String rival = jugadores.get(selectedIndex).getUsername();
+            mensaje = menus.iniciarChallenge(rival);
+            if ("Challenge iniciado".equals(mensaje)) {
+                scene.startFriendlyChallenge(rival);
+            }
         }
         contadorMensaje = 150;
     }
@@ -81,7 +92,16 @@ public class ChallengeSelectEntity extends Entity {
         g.fillRect(0, 0, View.SCREEN_WIDTH, View.SCREEN_HEIGHT);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(30f));
-        g.drawString(I18n.t("players_title"), 425, 95);
+        g.drawString(I18n.t("ranking_title"), 345, 80);
+        g.setFont(g.getFont().deriveFont(15f));
+        g.drawString(I18n.t("ranking_rules_1"), 145, 112);
+        g.drawString(I18n.t("ranking_rules_2"), 145, 132);
+
+        if (!scene.getLastChallengeResult().isEmpty()) {
+            g.setColor(Color.YELLOW);
+            g.setFont(g.getFont().deriveFont(15f));
+            g.drawString(scene.getLastChallengeResult(), 90, 575);
+        }
 
         List<Usuario> jugadores = getJugadores();
         if (jugadores.isEmpty()) {
@@ -95,7 +115,7 @@ public class ChallengeSelectEntity extends Entity {
         if (contadorMensaje > 0) {
             g.setColor(Color.YELLOW);
             g.setFont(g.getFont().deriveFont(15f));
-            g.drawString(mensaje, 90, 585);
+            g.drawString(mensaje, 90, 595);
         }
 
         btnReto.draw(g);
@@ -110,27 +130,59 @@ public class ChallengeSelectEntity extends Entity {
             g.setColor(i == selectedIndex ? new Color(255, 210, 90, 90) : new Color(255, 255, 255, 35));
             g.fillRoundRect(ROW_X, y, ROW_W, ROW_H - 8, 10, 10);
 
-            BufferedImage avatar = loadImageFromResource("/res/" + jugador.getAvatar());
+            BufferedImage avatar = getAvatar(jugador.getAvatar());
             g.drawImage(avatar, ROW_X + 10, y + 8, 46, 46, null);
             g.setColor(Color.WHITE);
             g.setFont(g.getFont().deriveFont(18f));
-            g.drawString(shortName(jugador.getUsername()), ROW_X + 75, y + 30);
+            g.drawString("#" + (i + 1), ROW_X + 70, y + 30);
+            g.drawString(shortName(jugador.getUsername()), ROW_X + 130, y + 30);
             g.setFont(g.getFont().deriveFont(15f));
-            g.drawString(I18n.t("score") + ": " + jugador.getPuntuacionGeneral(), ROW_X + 300, y + 27);
-            g.drawString(I18n.t("stars") + ": " + menus.totalEstrellas(jugador.getUsername()), ROW_X + 520, y + 27);
+            String relation = isFriend(jugador) ? I18n.t("friend") : I18n.t("player");
+            if (isCurrentUser(jugador)) relation = I18n.t("you");
+            g.drawString(relation, ROW_X + 270, y + 27);
+            g.drawString(I18n.t("levels_completed") + menus.nivelesCompletados(jugador.getUsername()), ROW_X + 350, y + 27);
+            g.drawString(I18n.t("stars") + ": " + menus.totalEstrellas(jugador.getUsername()), ROW_X + 620, y + 27);
         }
     }
 
     private List<Usuario> getJugadores() {
-        Usuario actual = sessionManager.getUsuarioActual();
         ArrayList<Usuario> todos = menus.cargarTodosUsuarios();
         ArrayList<Usuario> jugadores = new ArrayList<Usuario>();
         for (Usuario usuario : todos) {
-            if (actual == null || !usuario.getUsername().equals(actual.getUsername())) {
+            if (usuario.isCuentaActiva()) {
                 jugadores.add(usuario);
             }
         }
+        Collections.sort(jugadores, new Comparator<Usuario>() {
+            @Override
+            public int compare(Usuario a, Usuario b) {
+                int byLevels = menus.nivelesCompletados(b.getUsername()) - menus.nivelesCompletados(a.getUsername());
+                if (byLevels != 0) return byLevels;
+                int byStars = menus.totalEstrellas(b.getUsername()) - menus.totalEstrellas(a.getUsername());
+                if (byStars != 0) return byStars;
+                return a.getUsername().compareToIgnoreCase(b.getUsername());
+            }
+        });
         return jugadores;
+    }
+
+    private boolean isCurrentUser(Usuario usuario) {
+        Usuario actual = sessionManager.getUsuarioActual();
+        return actual != null && usuario != null && actual.getUsername().equals(usuario.getUsername());
+    }
+
+    private boolean isFriend(Usuario usuario) {
+        Usuario actual = sessionManager.getUsuarioActual();
+        return actual != null && usuario != null && actual.getAmigosRivales().contains(usuario.getUsername());
+    }
+
+    private BufferedImage getAvatar(String avatarName) {
+        BufferedImage avatar = avatarCache.get(avatarName);
+        if (avatar == null) {
+            avatar = loadImageFromResource("/res/" + avatarName);
+            avatarCache.put(avatarName, avatar);
+        }
+        return avatar;
     }
 
     private String shortName(String username) {

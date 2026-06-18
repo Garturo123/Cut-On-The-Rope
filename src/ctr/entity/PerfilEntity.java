@@ -52,7 +52,7 @@ public class PerfilEntity extends Entity {
         btnAmigos = new Button(scene, I18n.t("friends"), 50, 28, 300, yStart + 85);
         btnStats = new Button(scene, I18n.t("stats"), 55, 28, 510, yStart + 85);
         
-        btnVolver.setListener(() -> scene.cambiarAState(GameState.MENU_SESION));
+        btnVolver.setListener(() -> scene.cambiarAState(GameState.SOCIAL_MENU));
         btnCerrarSesion.setListener(() -> {
             authService.logout();
             scene.cambiarAState(GameState.MENU_PRINCIPAL);
@@ -91,7 +91,7 @@ public class PerfilEntity extends Entity {
             "═══════════════════════════════════════",
             "STATISTICS",
             "═══════════════════════════════════════",
-            "Total Score: " + usuario.getPuntuacionGeneral(),
+            "Stars: " + scene.getMenus().totalEstrellas(usuario.getUsername()),
             "Levels Completed: " + usuario.getNivelesCompletados(),
             "Challenges Won: " + usuario.getRetosGanados(),
             "Friends: " + usuario.getAmigosRivales().size(),

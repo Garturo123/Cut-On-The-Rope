@@ -7,7 +7,7 @@ public class Config implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private int volumenSFX = 80;
-    private int volumenMusica = 60;
+    private int volumenMusica = 35;
     private boolean sfxActivo = true;
     private boolean musicaActiva = true;
     private double posicionMusicaSegundos = 0;
@@ -29,7 +29,11 @@ public class Config implements Serializable {
     public void setVolumenMusica(int volumen) { this.volumenMusica = Math.max(0, Math.min(100, volumen)); this.musicaActiva = volumen > 0; }
     
     public boolean isSfxActivo() { return sfxActivo; }
+    public void setSfxActivo(boolean sfxActivo) { this.sfxActivo = sfxActivo; }
+
     public boolean isMusicaActiva() { return musicaActiva; }
+    public void setMusicaActiva(boolean musicaActiva) { this.musicaActiva = musicaActiva; }
+
     public boolean isMute() { return !sfxActivo && !musicaActiva; }
     public double getPosicionMusica() { return posicionMusicaSegundos; }
     public void setPosicionMusica(double pos) { this.posicionMusicaSegundos = Math.max(0, pos); }

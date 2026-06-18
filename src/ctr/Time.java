@@ -29,6 +29,8 @@ public class Time
         if(previous < 0)
             previous = current;
         delta = current - previous;
+        if (delta > 0.25)
+            delta = 0.25;
         previous = current;
         unprocessed += delta;
         while(unprocessed > frameRate) 

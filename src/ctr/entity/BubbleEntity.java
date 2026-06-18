@@ -81,11 +81,16 @@ public class BubbleEntity extends Entity implements BubbleListener
     @Override
     public void onBurst() 
     {
+        scene.reproducirSFX("SoundEfects/bubble_break.wav");
         burst = true;
         burstPosition.setLocation(bubble.getPosition().x, bubble.getPosition().y);
         animation.selectAnimation("burst");
     }
 
     @Override
-    public void onCandyCaught() {   animation.selectAnimation("flight");    }
+    public void onCandyCaught() 
+    {
+        scene.reproducirSFX("SoundEfects/bubble.wav");
+        animation.selectAnimation("flight");
+    }
 }

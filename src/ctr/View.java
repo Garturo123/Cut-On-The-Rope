@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
@@ -37,7 +38,7 @@ public class View extends Canvas implements KeyListener  // Implementar KeyListe
     public void start()
     {
         scene.start();
-        createBufferStrategy(2);
+        createBufferStrategy(3);
         bs = getBufferStrategy();
         new Thread(new MainLoop()).start();
     }
@@ -87,9 +88,10 @@ public class View extends Canvas implements KeyListener  // Implementar KeyListe
                 draw(g);
                 g.dispose();
                 bs.show();
+                Toolkit.getDefaultToolkit().sync();
                 try 
                 {
-                    Thread.sleep(5);
+                    Thread.sleep(1);
                 } catch (InterruptedException ex)   { }
             }
         }

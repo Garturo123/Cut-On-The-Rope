@@ -41,7 +41,13 @@ public class Menu {
     public String agregarAmigo(String username) {
         Usuario actual = u();
         if (actual == null) return "Sin sesion";
-        return amigosService.agregarBidireccional(actual, username);
+        return amigosService.solicitarAmistad(actual, username);
+    }
+
+    public String aceptarSolicitudAmistad(String username) {
+        Usuario actual = u();
+        if (actual == null) return "Sin sesion";
+        return amigosService.aceptarSolicitud(actual, username);
     }
 
     public String iniciarChallenge(String usernameRival) {
@@ -62,6 +68,16 @@ public class Menu {
         int total = 0;
         for (Niveles nivel : puzzleRepo.cargar(username)) {
             total += nivel.getMejoresEstrellas();
+        }
+        return total;
+    }
+
+    public int nivelesCompletados(String username) {
+        int total = 0;
+        for (Niveles nivel : puzzleRepo.cargar(username)) {
+            if (nivel.isCompletado()) {
+                total++;
+            }
         }
         return total;
     }

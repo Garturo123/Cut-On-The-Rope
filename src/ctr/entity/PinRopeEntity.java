@@ -12,13 +12,13 @@ import java.awt.Stroke;
 
 public class PinRopeEntity extends Entity implements PinRopeListener 
 {    
-    private static final Stroke ROPE_STROKE = new BasicStroke(2);
-    private static final Stroke OUTLINE_STROKE = new BasicStroke(5);
+    private static final Stroke ROPE_STROKE = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final Stroke OUTLINE_STROKE = new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final Stroke DASHED_STROKE = new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f }, 0.0f);     
     private PinRope pinRope;
     private Rope rope;
-    private static Color[] OUTLINE_COLOR = { Color.BLACK } ;
-    private static Color[] ROPE_COLOR = { new Color(250, 180, 180), new Color(200, 110, 110) };
+    private static Color[] OUTLINE_COLOR = { new Color(35, 26, 18) } ;
+    private static Color[] ROPE_COLOR = { new Color(72, 56, 36), new Color(38, 29, 21) };
     
     public PinRopeEntity(Scene scene, PinRope pinRope) 
     {

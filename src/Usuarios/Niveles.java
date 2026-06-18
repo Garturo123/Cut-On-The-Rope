@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Niveles implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_ESTRELLAS = 3;
 
     private int nivel;
     private String dificultad;
@@ -71,12 +72,12 @@ public class Niveles implements Serializable {
     }
 
     private int normalizarEstrellas(int estrellas) {
-        return Math.max(0, Math.min(3, estrellas));
+        return Math.max(0, Math.min(MAX_ESTRELLAS, estrellas));
     }
 
     @Override
     public String toString() {
-        return String.format("Nivel %d - %s [%s] - Estrellas: %d - Puntaje: %d - Tiempo: %s",
-            nivel, dificultad, completado ? "Completado" : "Bloqueado", mejoresEstrellas, mejorPuntaje, getTiempoFormateado());
+        return String.format("Nivel %d - %s [%s] - Estrellas: %d - Tiempo: %s",
+            nivel, dificultad, completado ? "Completado" : "Bloqueado", mejoresEstrellas, getTiempoFormateado());
     }
 }

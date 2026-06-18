@@ -33,7 +33,7 @@ public class Pet
     
     public void update() 
     {
-        if(!model.isLevelCleared()) 
+        if(model.isPlaying()) 
         {
             Vec2 candyPivot = model.getCandy().getPivot();
             vTmp.set(candyPivot);

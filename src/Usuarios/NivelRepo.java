@@ -12,7 +12,7 @@ public class NivelRepo {
             return crearPuzzlesIniciales();
         }
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(archivo))) {
-            return (ArrayList<Niveles>) in.readObject();
+            return completarPuzzlesFaltantes((ArrayList<Niveles>) in.readObject());
         } catch (Exception e) {
             return crearPuzzlesIniciales();
         }
@@ -38,13 +38,27 @@ public class NivelRepo {
     }
     
     private ArrayList<Niveles> crearPuzzlesIniciales() {
-        ArrayList<Niveles> puzzles = new ArrayList<>();
+        return completarPuzzlesFaltantes(new ArrayList<Niveles>());
+    }
+
+    private ArrayList<Niveles> completarPuzzlesFaltantes(ArrayList<Niveles> puzzles) {
         String[] dificultades = {"Neon Circuit", "Power Grid", "Voltage Run", "Electric Drift", "Overload"};
         
-        for (int i = 0; i < 10; i++) {
-            puzzles.add(new Niveles(i + 1, dificultades[i / 2]));
+        for (int i = 1; i <= 10; i++) {
+            if (!contieneNivel(puzzles, i)) {
+                puzzles.add(new Niveles(i, dificultades[(i - 1) / 2]));
+            }
         }
         return puzzles;
+    }
+
+    private boolean contieneNivel(ArrayList<Niveles> puzzles, int nivel) {
+        for (Niveles puzzle : puzzles) {
+            if (puzzle.getNivel() == nivel) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private String rutaArchivo(String rutaBase, String username) {

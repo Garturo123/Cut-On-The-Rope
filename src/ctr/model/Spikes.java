@@ -30,6 +30,8 @@ public class Spikes
     
     public void update() 
     {
+        if(!model.isPlaying())
+            return;
         for(int i = 0; i < polygon.npoints; i++) 
         {
             line.getA().set(polygon.xpoints[i], polygon.ypoints[i]);

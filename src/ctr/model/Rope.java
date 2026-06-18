@@ -7,6 +7,8 @@ import ctr.physics.Vec2;
 import ctr.physics.World;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rope 
 {
@@ -20,6 +22,7 @@ public class Rope
     private static Line cutLineTmp = new Line(0, 0, 0, 0);
     private boolean cut = false;
     private long cutTime;
+    private final List<RopeListener> listeners = new ArrayList<RopeListener>();
     
     public Rope(Model model, double x1, double y1, double x2, double y2, int segmentsNumber) 
     {
@@ -45,6 +48,8 @@ public class Rope
     public boolean isCut()  {   return cut; }
 
     public long getCutTime()    {   return cutTime; }
+
+    public void addListener(RopeListener listener)  {   listeners.add(listener);    }
     
     private void create() 
     {
@@ -110,6 +115,7 @@ public class Rope
                 dettachCandy();
                 cut = true;
                 cutTime = System.currentTimeMillis();
+                fireOnRopeCut();
                 break;
             }
         }
@@ -122,5 +128,11 @@ public class Rope
             if (stick != null && stick.isVisible())
                 stick.drawDebug(g);
         }
+    }
+
+    private void fireOnRopeCut()
+    {
+        for (RopeListener listener : listeners)
+            listener.onRopeCut();
     }
 }

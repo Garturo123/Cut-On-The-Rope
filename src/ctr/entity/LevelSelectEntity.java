@@ -14,11 +14,9 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 public class LevelSelectEntity extends Entity {
-    private static final int MAX_LEVEL = 5;
-
     private final PuzzleService puzzleService;
     private final SessionManager sessionManager;
-    private final Button[] levelButtons = new Button[MAX_LEVEL];
+    private final Button[] levelButtons = new Button[Scene.MAX_LEVEL];
     private final Button btnBack;
     private ArrayList<Niveles> niveles = new ArrayList<>();
     private String mensaje = "";
@@ -29,11 +27,11 @@ public class LevelSelectEntity extends Entity {
         this.puzzleService = puzzleService;
         this.sessionManager = sessionManager;
 
-        for (int i = 0; i < MAX_LEVEL; i++) {
+        for (int i = 0; i < Scene.MAX_LEVEL; i++) {
             final int level = i + 1;
-            int col = i % 3;
-            int row = i / 3;
-            levelButtons[i] = new Button(scene, "Level " + level, 30, 42, 125 + col * 185, 180 + row * 130);
+            int col = i % 5;
+            int row = i / 5;
+            levelButtons[i] = new Button(scene, "Level " + level, 30, 42, 60 + col * 185, 185 + row * 165);
             levelButtons[i].setListener(() -> seleccionarNivel(level));
         }
 
@@ -74,12 +72,12 @@ public class LevelSelectEntity extends Entity {
         g.drawString(I18n.t("level_select"), 390, 95);
 
         g.setFont(g.getFont().deriveFont(15f));
-        for (int i = 0; i < MAX_LEVEL; i++) {
+        for (int i = 0; i < Scene.MAX_LEVEL; i++) {
             int level = i + 1;
-            int col = i % 3;
-            int row = i / 3;
-            int x = 125 + col * 185;
-            int y = 180 + row * 130;
+            int col = i % 5;
+            int row = i / 5;
+            int x = 60 + col * 185;
+            int y = 185 + row * 165;
             boolean unlocked = scene.canPlayLevel(level);
             Niveles nivel = buscarNivel(level);
             int stars = nivel != null ? nivel.getMejoresEstrellas() : 0;
@@ -115,7 +113,7 @@ public class LevelSelectEntity extends Entity {
 
     private String formatStars(int stars) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < Scene.MAX_STARS; i++) {
             sb.append(i < stars ? '*' : '-');
         }
         return sb.toString();

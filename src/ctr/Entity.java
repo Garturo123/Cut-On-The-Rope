@@ -51,6 +51,7 @@ public class Entity
             case REGISTER: updateRegister(); break;
             case REACTIVATE_ACCOUNT: updateReactivateAccount(); break;
             case MENU_SESION: updateMenuSesion(); break;
+            case SOCIAL_MENU: updateSocialMenu(); break;
             case PERFIL: updatePerfil(); break;
             case AVATAR_SELECTOR: updateAvatarSelector(); break;
             case AUDIO_CONFIG: updateAudioConfig(); break;
@@ -104,6 +105,8 @@ public class Entity
     protected void updateReactivateAccount() {   }
 
     protected void updateMenuSesion() {   }
+
+    protected void updateSocialMenu() {   }
 
     protected void updatePerfil() {   }
 
